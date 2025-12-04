@@ -2,6 +2,8 @@
 
 Full-featured e-commerce website built with Next.js, MySQL, and TypeScript.
 
+**Last Updated:** 2025-12-04 - Auto-deployment configured
+
 ## Features
 
 - ✅ Product catalog with categories
