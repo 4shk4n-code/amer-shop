@@ -143,7 +143,7 @@ export async function generateStaticParams() {
     take: 100, // Limit for static generation
   });
 
-  return products.map((product) => ({
+  return products.map((product: { slug: string }) => ({
     slug: product.slug,
   }));
 }
