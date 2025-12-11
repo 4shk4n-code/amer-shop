@@ -43,6 +43,10 @@ export function PlaceholderImage({
   const isValidUrl = finalSrc.startsWith("http://") || finalSrc.startsWith("https://") || finalSrc.startsWith("/");
   const imageSrc = isValidUrl ? finalSrc : placeholder;
 
+  // Disable optimization for Unsplash images (they're already optimized)
+  const isUnsplash = imageSrc.includes("images.unsplash.com");
+  const shouldOptimize = src && isValidUrl && !isUnsplash;
+
   if (fill) {
     return (
       <Image
@@ -52,7 +56,7 @@ export function PlaceholderImage({
         className={className}
         priority={priority}
         sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-        unoptimized={!src || !isValidUrl}
+        unoptimized={!shouldOptimize}
       />
     );
   }
@@ -65,7 +69,7 @@ export function PlaceholderImage({
       height={height || 300}
       className={className}
       priority={priority}
-      unoptimized={!src || !isValidUrl}
+      unoptimized={!shouldOptimize}
     />
   );
 }
