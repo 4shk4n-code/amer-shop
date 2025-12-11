@@ -17,12 +17,7 @@ const nextConfig = {
     ],
   },
         webpack: (config, { isServer }) => {
-          if (isServer) {
-            config.resolve.alias = {
-              ...config.resolve.alias,
-              '@prisma/client': require('path').resolve(process.cwd(), '.prisma/client'),
-            };
-          }
+          // No custom alias needed - using default Prisma output location
           return config;
         },
 };
