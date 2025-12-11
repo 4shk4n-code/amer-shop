@@ -14,7 +14,7 @@ function createPrismaClient() {
   // Check for Prisma Accelerate URL (multiple possible env var names)
   const accelerateUrl = 
     process.env.PRISMA_ACCELERATE_URL || 
-    process.env.PRISMA_DATABASE_URL?.startsWith('prisma+') ? process.env.PRISMA_DATABASE_URL : null ||
+    (process.env.PRISMA_DATABASE_URL?.startsWith('prisma+') ? process.env.PRISMA_DATABASE_URL : null) ||
     (process.env.DATABASE_URL?.includes('accelerate.prisma-data.net') ? process.env.DATABASE_URL : null)
 
   if (accelerateUrl) {
