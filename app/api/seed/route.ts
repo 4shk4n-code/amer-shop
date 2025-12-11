@@ -3,38 +3,36 @@ import { prisma } from "@/lib/prisma";
 
 // Shared seed function
 async function seedDatabase() {
-  // Import and run seed function
-  const { PrismaClient } = await import("@prisma/client");
-  const seedPrisma = new PrismaClient();
-
+  // Use the existing prisma instance (already properly configured)
+  
   // Create categories
-    const categories = [
-      { name: "Electronics", slug: "electronics", description: "Latest gadgets and tech" },
-      { name: "Fashion", slug: "fashion", description: "Trendy clothing & accessories" },
-      { name: "Home & Garden", slug: "home-garden", description: "Everything for your home" },
-      { name: "Sports", slug: "sports", description: "Fitness & outdoor gear" },
-      { name: "Automotive", slug: "automotive", description: "Parts & accessories for your vehicle" },
-      { name: "Toys", slug: "toys", description: "Fun for all ages" },
-    ];
+  const categories = [
+    { name: "Electronics", slug: "electronics", description: "Latest gadgets and tech" },
+    { name: "Fashion", slug: "fashion", description: "Trendy clothing & accessories" },
+    { name: "Home & Garden", slug: "home-garden", description: "Everything for your home" },
+    { name: "Sports", slug: "sports", description: "Fitness & outdoor gear" },
+    { name: "Automotive", slug: "automotive", description: "Parts & accessories for your vehicle" },
+    { name: "Toys", slug: "toys", description: "Fun for all ages" },
+  ];
 
-    for (const category of categories) {
-      await seedPrisma.category.upsert({
-        where: { slug: category.slug },
-        update: {},
-        create: category,
-      });
-    }
+  for (const category of categories) {
+    await prisma.category.upsert({
+      where: { slug: category.slug },
+      update: {},
+      create: category,
+    });
+  }
 
-    // Get category IDs
-    const electronicsCategory = await seedPrisma.category.findUnique({
-      where: { slug: "electronics" },
-    });
-    const homeGardenCategory = await seedPrisma.category.findUnique({
-      where: { slug: "home-garden" },
-    });
-    const automotiveCategory = await seedPrisma.category.findUnique({
-      where: { slug: "automotive" },
-    });
+  // Get category IDs
+  const electronicsCategory = await prisma.category.findUnique({
+    where: { slug: "electronics" },
+  });
+  const homeGardenCategory = await prisma.category.findUnique({
+    where: { slug: "home-garden" },
+  });
+  const automotiveCategory = await prisma.category.findUnique({
+    where: { slug: "automotive" },
+  });
 
     if (!electronicsCategory || !homeGardenCategory || !automotiveCategory) {
       throw new Error("Categories not found");
@@ -171,8 +169,8 @@ async function seedDatabase() {
       },
     ];
 
-    for (const product of products) {
-      await seedPrisma.product.upsert({
+  for (const product of products) {
+    await prisma.product.upsert({
         where: { id: product.id },
         update: {
           name: product.name,
@@ -200,7 +198,8 @@ async function seedDatabase() {
       });
     }
 
-  await seedPrisma.$disconnect();
+  // Don't disconnect - we're using the shared prisma instance
+  // await prisma.$disconnect(); // Don't disconnect shared instance
 
   return {
     success: true,
