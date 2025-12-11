@@ -2,6 +2,10 @@ import Header from "@/components/Header";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 
+// Force dynamic rendering since products can be added/updated
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ProductsPage() {
   // Get all active products
   const products = await prisma.product.findMany({
