@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 
 // Force dynamic rendering since products can be added/updated
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 0; // Disable caching for real-time product updates
 
 export default async function ProductsPage() {
   // Get all active products
