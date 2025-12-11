@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const electronicsProducts = [
   {
     id: "elec-1",
+    slug: "wireless-headphones",
     name: "Wireless Headphones",
     price: 99.99,
     category: "Electronics",
@@ -16,6 +17,7 @@ const electronicsProducts = [
   },
   {
     id: "elec-2",
+    slug: "smart-watch",
     name: "Smart Watch",
     price: 249.99,
     category: "Electronics",
@@ -24,6 +26,7 @@ const electronicsProducts = [
   },
   {
     id: "elec-3",
+    slug: "laptop-stand",
     name: "Laptop Stand",
     price: 49.99,
     category: "Electronics",
@@ -32,6 +35,7 @@ const electronicsProducts = [
   },
   {
     id: "elec-4",
+    slug: "usb-c-hub",
     name: "USB-C Hub",
     price: 39.99,
     category: "Electronics",
@@ -40,6 +44,7 @@ const electronicsProducts = [
   },
   {
     id: "elec-5",
+    slug: "wireless-mouse",
     name: "Wireless Mouse",
     price: 29.99,
     category: "Electronics",
@@ -48,6 +53,7 @@ const electronicsProducts = [
   },
   {
     id: "elec-6",
+    slug: "mechanical-keyboard",
     name: "Mechanical Keyboard",
     price: 129.99,
     category: "Electronics",

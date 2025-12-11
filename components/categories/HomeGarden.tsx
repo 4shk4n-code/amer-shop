@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const homeGardenProducts = [
   {
     id: "home-1",
+    slug: "garden-tools-set",
     name: "Garden Tools Set",
     price: 79.99,
     category: "Home & Garden",
@@ -16,6 +17,7 @@ const homeGardenProducts = [
   },
   {
     id: "home-2",
+    slug: "indoor-plant-pot",
     name: "Indoor Plant Pot",
     price: 24.99,
     category: "Home & Garden",
@@ -24,6 +26,7 @@ const homeGardenProducts = [
   },
   {
     id: "home-3",
+    slug: "led-desk-lamp",
     name: "LED Desk Lamp",
     price: 34.99,
     category: "Home & Garden",
@@ -32,6 +35,7 @@ const homeGardenProducts = [
   },
   {
     id: "home-4",
+    slug: "throw-pillow-set",
     name: "Throw Pillow Set",
     price: 49.99,
     category: "Home & Garden",
@@ -40,6 +44,7 @@ const homeGardenProducts = [
   },
   {
     id: "home-5",
+    slug: "wall-clock",
     name: "Wall Clock",
     price: 39.99,
     category: "Home & Garden",
@@ -48,6 +53,7 @@ const homeGardenProducts = [
   },
   {
     id: "home-6",
+    slug: "storage-basket",
     name: "Storage Basket",
     price: 19.99,
     category: "Home & Garden",

@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 const fashionProducts = [
   {
     id: "fash-1",
+    slug: "cotton-t-shirt",
     name: "Cotton T-Shirt",
     price: 29.99,
     category: "Fashion",
@@ -13,6 +14,7 @@ const fashionProducts = [
   },
   {
     id: "fash-2",
+    slug: "denim-jacket",
     name: "Denim Jacket",
     price: 79.99,
     category: "Fashion",
@@ -21,6 +23,7 @@ const fashionProducts = [
   },
   {
     id: "fash-3",
+    slug: "sneakers",
     name: "Sneakers",
     price: 89.99,
     category: "Fashion",
@@ -29,6 +32,7 @@ const fashionProducts = [
   },
   {
     id: "fash-4",
+    slug: "leather-belt",
     name: "Leather Belt",
     price: 39.99,
     category: "Fashion",
@@ -37,6 +41,7 @@ const fashionProducts = [
   },
   {
     id: "fash-5",
+    slug: "sunglasses",
     name: "Sunglasses",
     price: 59.99,
     category: "Fashion",
@@ -45,6 +50,7 @@ const fashionProducts = [
   },
   {
     id: "fash-6",
+    slug: "backpack",
     name: "Backpack",
     price: 69.99,
     category: "Fashion",

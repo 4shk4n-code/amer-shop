@@ -3,6 +3,7 @@
 import ProductCard from "@/components/ProductCard";
 
 // Real automotive parts data
+// Note: Slugs match IDs - product page will find by slug first, then by id as fallback
 const automotiveProducts = [
   {
     id: "auto-bp-se-5016",
@@ -321,7 +322,7 @@ export default function Automotive() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {automotiveProducts.map((product) => (
-          <ProductCard key={product.id} {...product} />
+          <ProductCard key={product.id} {...product} slug={product.id} />
         ))}
       </div>
     </div>

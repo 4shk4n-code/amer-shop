@@ -15,6 +15,7 @@ interface ProductCardProps {
   description?: string;
   category?: string;
   unit?: string;
+  slug?: string; // Add slug prop
 }
 
 export default function ProductCard({
@@ -25,6 +26,7 @@ export default function ProductCard({
   description,
   category,
   unit,
+  slug, // Use slug if available, fallback to id
 }: ProductCardProps) {
   const { addToCart } = useCart();
 
@@ -42,9 +44,12 @@ export default function ProductCard({
     });
   };
 
+  // Use slug if available, otherwise use id (product page handles both)
+  const productLink = slug || id;
+
   return (
     <div className="group relative bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-      <Link href={`/product/${id}`}>
+      <Link href={`/product/${productLink}`}>
         <div className="relative aspect-square overflow-hidden bg-muted">
           <PlaceholderImage
             src={image}

@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 const toysProducts = [
   {
     id: "toy-1",
+    slug: "building-blocks",
     name: "Building Blocks",
     price: 49.99,
     category: "Toys",
@@ -13,6 +14,7 @@ const toysProducts = [
   },
   {
     id: "toy-2",
+    slug: "puzzle-set",
     name: "Puzzle Set",
     price: 19.99,
     category: "Toys",
@@ -21,6 +23,7 @@ const toysProducts = [
   },
   {
     id: "toy-3",
+    slug: "action-figure",
     name: "Action Figure",
     price: 24.99,
     category: "Toys",
@@ -29,6 +32,7 @@ const toysProducts = [
   },
   {
     id: "toy-4",
+    slug: "board-game",
     name: "Board Game",
     price: 34.99,
     category: "Toys",
@@ -37,6 +41,7 @@ const toysProducts = [
   },
   {
     id: "toy-5",
+    slug: "remote-control-car",
     name: "Remote Control Car",
     price: 59.99,
     category: "Toys",
@@ -45,6 +50,7 @@ const toysProducts = [
   },
   {
     id: "toy-6",
+    slug: "art-supplies-set",
     name: "Art Supplies Set",
     price: 29.99,
     category: "Toys",

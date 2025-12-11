@@ -7,6 +7,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 const newArrivals = [
   {
     id: "tv-uhd-70",
+    slug: "tv-uhd-70",
     name: "UHD 70\" TV",
     price: 1425,
     category: "Electronics",
@@ -15,6 +16,7 @@ const newArrivals = [
   },
   {
     id: "new-2",
+    slug: "grass-alex-mc-3-50-mm",
     name: "GRASS ALEX MC-3 50 MM",
     price: 22.43,
     category: "Home & Garden",
@@ -23,6 +25,7 @@ const newArrivals = [
   },
   {
     id: "new-3",
+    slug: "brake-pad-segal-sp-bp-se-6800",
     name: "Brake Pad Segal SP-BP-SE-6800",
     price: 38,
     category: "Automotive",
@@ -31,6 +34,7 @@ const newArrivals = [
   },
   {
     id: "tv-fhd-50",
+    slug: "tv-fhd-50",
     name: "FHD 50\" TV",
     price: 628,
     category: "Electronics",

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const tvProducts = [
   {
     id: "tv-fhd-32",
+    slug: "tv-fhd-32",
     name: "FHD 32\" TV",
     price: 270,
     category: "TV",
@@ -18,6 +19,7 @@ const tvProducts = [
   },
   {
     id: "tv-fhd-43",
+    slug: "tv-fhd-43",
     name: "FHD 43\" TV",
     price: 408,
     category: "TV",
@@ -27,6 +29,7 @@ const tvProducts = [
   },
   {
     id: "tv-fhd-50",
+    slug: "tv-fhd-50",
     name: "FHD 50\" TV",
     price: 628,
     category: "TV",
@@ -36,6 +39,7 @@ const tvProducts = [
   },
   {
     id: "tv-uhd-55",
+    slug: "tv-uhd-55",
     name: "UHD 55\" TV",
     price: 780,
     category: "TV",
@@ -45,6 +49,7 @@ const tvProducts = [
   },
   {
     id: "tv-uhd-70",
+    slug: "tv-uhd-70",
     name: "UHD 70\" TV",
     price: 1425,
     category: "TV",
@@ -54,6 +59,7 @@ const tvProducts = [
   },
   {
     id: "tv-uhd-75",
+    slug: "tv-uhd-75",
     name: "UHD 75\" TV",
     price: 1615,
     category: "TV",

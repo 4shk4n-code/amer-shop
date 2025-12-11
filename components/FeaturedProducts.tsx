@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 const featuredProducts = [
   {
     id: "tv-uhd-75",
+    slug: "tv-uhd-75",
     name: "UHD 75\" TV",
     price: 1615,
     category: "Electronics",
@@ -15,6 +16,7 @@ const featuredProducts = [
   },
   {
     id: "featured-2",
+    slug: "grass-thinkpar-gmc-50-mm",
     name: "GRASS THINKPAR GMC 50 MM",
     price: 23.08,
     category: "Home & Garden",
@@ -23,6 +25,7 @@ const featuredProducts = [
   },
   {
     id: "featured-3",
+    slug: "brake-pad-segal-sp-bp-se-8860-8865",
     name: "Brake Pad Segal SP-BP-SE-8860/8865",
     price: 49,
     category: "Automotive",
@@ -31,6 +34,7 @@ const featuredProducts = [
   },
   {
     id: "tv-uhd-55",
+    slug: "tv-uhd-55",
     name: "UHD 55\" TV",
     price: 780,
     category: "Electronics",

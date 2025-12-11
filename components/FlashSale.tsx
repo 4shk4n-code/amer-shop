@@ -10,6 +10,7 @@ import { formatPrice } from "@/lib/currency";
 const flashSaleProducts = [
   {
     id: "tv-fhd-32",
+    slug: "tv-fhd-32",
     name: "FHD 32\" TV",
     price: 270,
     originalPrice: 350,
@@ -19,6 +20,7 @@ const flashSaleProducts = [
   },
   {
     id: "flash-2",
+    slug: "grass-eco-22-mm",
     name: "GRASS ECO 22 MM",
     price: 9.23,
     originalPrice: 12.5,
@@ -28,6 +30,7 @@ const flashSaleProducts = [
   },
   {
     id: "flash-3",
+    slug: "brake-pad-segal-sp-bp-se-8500",
     name: "Brake Pad Segal SP-BP-SE-8500",
     price: 29,
     originalPrice: 39,
@@ -37,6 +40,7 @@ const flashSaleProducts = [
   },
   {
     id: "tv-fhd-43",
+    slug: "tv-fhd-43",
     name: "FHD 43\" TV",
     price: 408,
     originalPrice: 550,
@@ -67,7 +71,7 @@ export default function FlashSale() {
               : 0;
             return (
               <div key={product.id} className="group relative bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
-                <Link href={`/product/${product.id}`}>
+                <Link href={`/product/${product.slug || product.id}`}>
                   {discount > 0 && (
                     <Badge
                       variant="destructive"

@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 const sportsProducts = [
   {
     id: "sport-1",
+    slug: "yoga-mat",
     name: "Yoga Mat",
     price: 39.99,
     category: "Sports",
@@ -13,6 +14,7 @@ const sportsProducts = [
   },
   {
     id: "sport-2",
+    slug: "dumbbell-set",
     name: "Dumbbell Set",
     price: 129.99,
     category: "Sports",
@@ -21,6 +23,7 @@ const sportsProducts = [
   },
   {
     id: "sport-3",
+    slug: "running-shoes",
     name: "Running Shoes",
     price: 99.99,
     category: "Sports",
@@ -29,6 +32,7 @@ const sportsProducts = [
   },
   {
     id: "sport-4",
+    slug: "water-bottle",
     name: "Water Bottle",
     price: 19.99,
     category: "Sports",
@@ -37,6 +41,7 @@ const sportsProducts = [
   },
   {
     id: "sport-5",
+    slug: "resistance-bands",
     name: "Resistance Bands",
     price: 24.99,
     category: "Sports",
@@ -45,6 +50,7 @@ const sportsProducts = [
   },
   {
     id: "sport-6",
+    slug: "basketball",
     name: "Basketball",
     price: 29.99,
     category: "Sports",
