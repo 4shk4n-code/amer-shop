@@ -1,4 +1,4 @@
-# Amer
+# AMERSHOP!
 
 A modern, multi-category e-commerce shop built with Next.js, Tailwind CSS, and shadcn/ui.
 

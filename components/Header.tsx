@@ -52,14 +52,16 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3">
             <Image
               src="/images/logo/amerlogo.png"
-              alt="Amer Logo"
+              alt="AMERSHOP! Logo"
               width={120}
               height={40}
-              className="h-10 w-auto object-contain"
-              style={{ width: "auto", height: "40px" }}
+              className="h-10 w-auto"
               priority
+              unoptimized
             />
-            <span className="text-2xl font-bold text-primary hidden sm:block">Amer</span>
+            <span className="text-2xl font-extrabold hidden sm:block bg-gradient-to-r from-primary via-purple-600 to-primary bg-clip-text text-transparent drop-shadow-lg animate-pulse hover:animate-none transition-all duration-300 hover:scale-105">
+              AMERSHOP!
+            </span>
           </Link>
 
           {/* Search Bar - Centered */}

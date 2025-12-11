@@ -7,8 +7,13 @@ import { CartProvider } from "@/contexts/CartContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Amer - Modern Multi-Category Store",
+  title: "AMERSHOP! - Modern Multi-Category Store",
   description: "Your one-stop shop for all your needs",
+  icons: {
+    icon: "/images/logo/amerlogo.png",
+    shortcut: "/images/logo/amerlogo.png",
+    apple: "/images/logo/amerlogo.png",
+  },
 };
 
 export default function RootLayout({
