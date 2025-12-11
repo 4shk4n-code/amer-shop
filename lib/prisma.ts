@@ -1,6 +1,6 @@
-// Use webpack alias configured in next.config.js to resolve @prisma/client
-// @ts-ignore - Webpack alias resolves to custom Prisma location
-import { PrismaClient } from '@prisma/client'
+// Use dynamic require to load Prisma Client from custom location
+// @ts-ignore
+const { PrismaClient } = require('../node_modules/.prisma/client')
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
