@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model for NextAuth
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("customer") // "customer" or "admin"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // NextAuth relations
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Ecommerce relations
+  orders        Order[]
+  cartItems     CartItem[]
+  
+  @@map("users")
+}
+
+// NextAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// NextAuth VerificationToken model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Category model
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  products    Product[]
+  
+  @@map("categories")
+}
+
+// Product model
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  price       Float
+  originalPrice Float?
+  image       String?
+  images      String?   // JSON array of image URLs
+  categoryId  String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  stock       Int       @default(0)
+  unit        String?   // e.g., "PER SQM"
+  isRefurbished Boolean @default(false)
+  condition   String?   // "excellent", "good", "fair" for refurbished
+  tax         Float?    @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  
+  @@map("products")
+}
+
+// Cart Item model
+model CartItem {
+  id        String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+// Order model
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  total         Float
+  subtotal      Float
+  tax           Float       @default(0)
+  shipping      Float       @default(0)
+  status        String      @default("pending") // "pending", "processing", "shipped", "delivered", "cancelled"
+  paymentStatus String      @default("pending") // "pending", "paid", "failed", "refunded"
+  paymentMethod String?     // "card", "cash", "paypal", etc.
+  shippingAddress String?
+  billingAddress  String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  items         OrderItem[]
+  
+  @@map("orders")
+}
+
+// Order Item model
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float    // Price at time of order
+  createdAt DateTime @default(now())
+
+  @@map("order_items")
+}
