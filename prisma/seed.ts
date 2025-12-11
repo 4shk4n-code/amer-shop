@@ -839,6 +839,17 @@ async function main() {
       image: "/images/car-parts/WhatsApp Image 2025-12-09 at 4.41.54 PM.jpeg",
       stock: 25,
     },
+    {
+      id: "auto-bp-se-8500",
+      name: "Brake Pad Segal SP-BP-SE-8500",
+      slug: "auto-bp-se-8500",
+      price: 29,
+      originalPrice: 39,
+      categoryId: automotiveCategory?.id || "",
+      description: "(Rear) Pars & Samand LX & Renault Megane & Duster",
+      image: "/images/car-parts/WhatsApp Image 2025-12-09 at 4.41.56 PM.jpeg",
+      stock: 20,
+    },
   ];
 
   // Upsert all products
