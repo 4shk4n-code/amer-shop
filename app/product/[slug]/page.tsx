@@ -14,12 +14,23 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await prisma.product.findUnique({
+  // Try to find by slug first, then by id as fallback
+  let product = await prisma.product.findUnique({
     where: { slug: params.slug },
     include: {
       category: true,
     },
   });
+
+  // If not found by slug, try by id (for hardcoded product IDs like "featured-1")
+  if (!product) {
+    product = await prisma.product.findUnique({
+      where: { id: params.slug },
+      include: {
+        category: true,
+      },
+    });
+  }
 
   if (!product) {
     notFound();
