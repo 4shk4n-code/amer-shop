@@ -42,9 +42,13 @@ jobs:
           DESTINATION_USERNAME: ${{ secrets.DESTINATION_USERNAME }}
           DESTINATION_REPO: ${{ secrets.DESTINATION_REPO }}
         run: |
-          # Add destination remote with token authentication
-          # Using format: https://TOKEN@github.com/USERNAME/REPO.git
-          git remote add destination https://$DESTINATION_TOKEN@github.com/$DESTINATION_USERNAME/$DESTINATION_REPO.git
+          # Debug: Show what we're connecting to (without exposing token)
+          echo "Connecting to: https://github.com/${DESTINATION_USERNAME}/${DESTINATION_REPO}.git"
+          echo "Token starts with: ${DESTINATION_TOKEN:0:7}..."
+          
+          # Use token authentication with proper format
+          # Format: https://x-access-token:TOKEN@github.com/USERNAME/REPO.git
+          git remote add destination https://x-access-token:${DESTINATION_TOKEN}@github.com/${DESTINATION_USERNAME}/${DESTINATION_REPO}.git
           
           # Push to destination
           git push destination main --force
