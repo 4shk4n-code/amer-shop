@@ -1,6 +1,4 @@
-// Use dynamic require to load Prisma Client
-// @ts-ignore - Prisma Client location
-const { PrismaClient } = require('../.prisma/client')
+import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
