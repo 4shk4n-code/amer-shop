@@ -83,11 +83,19 @@ export async function POST(request: Request) {
       tax,
     } = body;
 
-    // Generate slug from name
-    const slug = name
+    // Generate slug from name (handle duplicates)
+    let baseSlug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+    
+    // Check if slug already exists, if so add a number suffix
+    let slug = baseSlug;
+    let counter = 1;
+    while (await prisma.product.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
 
     const product = await prisma.product.create({
       data: {

@@ -74,7 +74,8 @@ export default function NewProductPage() {
         throw new Error(data.error || "Failed to create product");
       }
 
-      router.push("/admin/products");
+      // Show success message and redirect
+      router.push("/admin/products?created=true");
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Failed to create product");
