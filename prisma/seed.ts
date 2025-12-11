@@ -35,11 +35,12 @@ async function main() {
   });
 
   // Create featured products (from FeaturedProducts component)
+  // Using IDs that match frontend components
   const featuredProducts = [
     {
-      id: "featured-1",
+      id: "tv-uhd-75",
       name: "UHD 75\" TV",
-      slug: "uhd-75-tv",
+      slug: "tv-uhd-75",
       price: 1615,
       categoryId: electronicsCategory?.id || "",
       description: "Ultra HD 75 inch TV - Premium quality",
@@ -67,9 +68,9 @@ async function main() {
       stock: 25,
     },
     {
-      id: "featured-4",
+      id: "tv-uhd-55",
       name: "UHD 55\" TV",
-      slug: "uhd-55-tv",
+      slug: "tv-uhd-55",
       price: 780,
       categoryId: electronicsCategory?.id || "",
       description: "Ultra HD 55 inch TV",
@@ -81,9 +82,9 @@ async function main() {
   // Create flash sale products (from FlashSale component)
   const flashSaleProducts = [
     {
-      id: "flash-1",
+      id: "tv-fhd-32",
       name: "FHD 32\" TV",
-      slug: "fhd-32-tv",
+      slug: "tv-fhd-32",
       price: 270,
       originalPrice: 350,
       categoryId: electronicsCategory?.id || "",
@@ -114,9 +115,9 @@ async function main() {
       stock: 20,
     },
     {
-      id: "flash-4",
+      id: "tv-fhd-43",
       name: "FHD 43\" TV",
-      slug: "fhd-43-tv",
+      slug: "tv-fhd-43",
       price: 408,
       originalPrice: 550,
       categoryId: electronicsCategory?.id || "",
@@ -129,9 +130,9 @@ async function main() {
   // Create new arrivals (from NewArrivals component)
   const newArrivals = [
     {
-      id: "new-1",
+      id: "tv-uhd-70",
       name: "UHD 70\" TV",
-      slug: "uhd-70-tv",
+      slug: "tv-uhd-70",
       price: 1425,
       categoryId: electronicsCategory?.id || "",
       description: "Ultra HD 70 inch TV - Latest model",
@@ -159,9 +160,9 @@ async function main() {
       stock: 30,
     },
     {
-      id: "new-4",
+      id: "tv-fhd-50",
       name: "FHD 50\" TV",
-      slug: "fhd-50-tv",
+      slug: "tv-fhd-50",
       price: 628,
       categoryId: electronicsCategory?.id || "",
       description: "Full HD 50 inch TV",
