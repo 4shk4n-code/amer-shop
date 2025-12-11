@@ -7,6 +7,10 @@ import { ShoppingCart } from "lucide-react";
 import { PlaceholderImage } from "@/components/ui/placeholder-image";
 import { formatPrice } from "@/lib/currency";
 
+// Force dynamic rendering since products can be added/updated
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface ProductPageProps {
   params: {
     slug: string;
@@ -148,14 +152,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
 }
 
-export async function generateStaticParams() {
-  const products = await prisma.product.findMany({
-    select: { slug: true },
-    take: 100, // Limit for static generation
-  });
-
-  return products.map((product: { slug: string }) => ({
-    slug: product.slug,
-  }));
-}
+// Removed generateStaticParams - using dynamic rendering instead
+// This allows products to be added/updated without rebuilding
 
