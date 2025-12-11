@@ -20,10 +20,34 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+      - name: Validate secrets
+        run: |
+          if [ -z "${{ secrets.DESTINATION_TOKEN }}" ]; then
+            echo "ERROR: DESTINATION_TOKEN secret is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DESTINATION_USERNAME }}" ]; then
+            echo "ERROR: DESTINATION_USERNAME secret is not set!"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DESTINATION_REPO }}" ]; then
+            echo "ERROR: DESTINATION_REPO secret is not set!"
+            exit 1
+          fi
+          echo "✓ All secrets are set"
+
       - name: Push to destination repo
         env:
           DESTINATION_TOKEN: ${{ secrets.DESTINATION_TOKEN }}
+          DESTINATION_USERNAME: ${{ secrets.DESTINATION_USERNAME }}
+          DESTINATION_REPO: ${{ secrets.DESTINATION_REPO }}
         run: |
-          git remote add destination https://x-access-token:${{ secrets.DESTINATION_TOKEN }}@github.com/${{ secrets.DESTINATION_USERNAME }}/${{ secrets.DESTINATION_REPO }}.git
+          # Add destination remote with token authentication
+          # Using format: https://TOKEN@github.com/USERNAME/REPO.git
+          git remote add destination https://$DESTINATION_TOKEN@github.com/$DESTINATION_USERNAME/$DESTINATION_REPO.git
+          
+          # Push to destination
           git push destination main --force
+          
+          # Clean up
           git remote remove destination
