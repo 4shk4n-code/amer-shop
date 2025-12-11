@@ -39,36 +39,20 @@ export default async function ProductsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => {
-              const discount =
-                product.originalPrice && product.originalPrice > product.price
-                  ? Math.round(
-                      ((product.originalPrice - product.price) /
-                        product.originalPrice) *
-                        100
-                    )
-                  : 0;
-
-              return (
-                <div key={product.id} className="relative">
-                  {discount > 0 && (
-                    <div className="absolute top-2 right-2 z-10 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">
-                      -{discount}%
-                    </div>
-                  )}
-                  <ProductCard
-                    id={product.id}
-                    name={product.name}
-                    price={product.price}
-                    image={product.image || undefined}
-                    description={product.description || undefined}
-                    category={product.category.name}
-                    unit={product.unit || undefined}
-                    slug={product.slug}
-                  />
-                </div>
-              );
-            })}
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                originalPrice={product.originalPrice || undefined}
+                image={product.image || undefined}
+                description={product.description || undefined}
+                category={product.category.name}
+                unit={product.unit || undefined}
+                slug={product.slug}
+              />
+            ))}
           </div>
         )}
       </div>
