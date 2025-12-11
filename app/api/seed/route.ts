@@ -1,27 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// This endpoint seeds the database with initial data
-// Only allow in development or with a secret key
-export async function POST(request: Request) {
-  try {
-    // Check for secret key (optional security)
-    const { searchParams } = new URL(request.url);
-    const secret = searchParams.get("secret");
-    
-    // In production, require a secret
-    if (process.env.NODE_ENV === "production" && secret !== process.env.SEED_SECRET) {
-      return NextResponse.json(
-        { error: "Unauthorized. Secret key required." },
-        { status: 401 }
-      );
-    }
+// Shared seed function
+async function seedDatabase() {
+  // Import and run seed function
+  const { PrismaClient } = await import("@prisma/client");
+  const seedPrisma = new PrismaClient();
 
-    // Import and run seed function
-    const { PrismaClient } = await import("@prisma/client");
-    const seedPrisma = new PrismaClient();
-
-    // Create categories
+  // Create categories
     const categories = [
       { name: "Electronics", slug: "electronics", description: "Latest gadgets and tech" },
       { name: "Fashion", slug: "fashion", description: "Trendy clothing & accessories" },
@@ -214,12 +200,60 @@ export async function POST(request: Request) {
       });
     }
 
-    await seedPrisma.$disconnect();
+  await seedPrisma.$disconnect();
 
-    return NextResponse.json({
-      success: true,
-      message: `Seeded ${products.length} products and ${categories.length} categories`,
-    });
+  return {
+    success: true,
+    message: `Seeded ${products.length} products and ${categories.length} categories`,
+  };
+}
+
+// GET handler - works from browser
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const secret = searchParams.get("secret");
+    
+    // In production, require a secret (but make it optional for now)
+    if (process.env.NODE_ENV === "production" && secret !== process.env.SEED_SECRET && !process.env.SEED_SECRET) {
+      // If no SEED_SECRET is set, allow it (for initial setup)
+    } else if (process.env.NODE_ENV === "production" && secret !== process.env.SEED_SECRET) {
+      return NextResponse.json(
+        { error: "Unauthorized. Add ?secret=YOUR_SECRET to the URL." },
+        { status: 401 }
+      );
+    }
+
+    const result = await seedDatabase();
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error("Seed error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to seed database" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST handler - works from API calls
+export async function POST(request: Request) {
+  try {
+    // Check for secret key (optional security)
+    const { searchParams } = new URL(request.url);
+    const secret = searchParams.get("secret");
+    
+    // In production, require a secret (but make it optional for now)
+    if (process.env.NODE_ENV === "production" && secret !== process.env.SEED_SECRET && !process.env.SEED_SECRET) {
+      // If no SEED_SECRET is set, allow it (for initial setup)
+    } else if (process.env.NODE_ENV === "production" && secret !== process.env.SEED_SECRET) {
+      return NextResponse.json(
+        { error: "Unauthorized. Secret key required." },
+        { status: 401 }
+      );
+    }
+
+    const result = await seedDatabase();
+    return NextResponse.json(result);
   } catch (error: any) {
     console.error("Seed error:", error);
     return NextResponse.json(
