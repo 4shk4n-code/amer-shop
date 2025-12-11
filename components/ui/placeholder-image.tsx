@@ -36,32 +36,36 @@ export function PlaceholderImage({
     placeholderText || alt
   );
 
-  // Use placeholder if no src provided
-  const finalSrc = src || placeholder;
+  // Use placeholder if no src provided or if src is empty string
+  const finalSrc = (src && src.trim() !== "") ? src : placeholder;
+  
+  // Ensure finalSrc is a valid URL - if not, use placeholder
+  const isValidUrl = finalSrc.startsWith("http://") || finalSrc.startsWith("https://") || finalSrc.startsWith("/");
+  const imageSrc = isValidUrl ? finalSrc : placeholder;
 
   if (fill) {
     return (
       <Image
-        src={finalSrc}
+        src={imageSrc}
         alt={alt}
         fill
         className={className}
         priority={priority}
         sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-        unoptimized={!src}
+        unoptimized={!src || !isValidUrl}
       />
     );
   }
 
   return (
     <Image
-      src={finalSrc}
+      src={imageSrc}
       alt={alt}
       width={width || 400}
       height={height || 300}
       className={className}
       priority={priority}
-      unoptimized={!src}
+      unoptimized={!src || !isValidUrl}
     />
   );
 }

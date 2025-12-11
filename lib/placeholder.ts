@@ -10,16 +10,26 @@ export function getPlaceholderImage(
   bgColor?: string,
   textColor?: string
 ): string {
+  // Use placeholder.com with proper URL encoding
   const baseUrl = "https://via.placeholder.com";
   const dimensions = `${width}x${height}`;
   const bg = bgColor || "cccccc";
   const color = textColor || "969696";
   const label = text ? encodeURIComponent(text) : "";
 
+  // Ensure the URL is properly formatted
   if (label) {
-    return `${baseUrl}/${dimensions}/${bg}/${color}?text=${label}`;
+    const url = `${baseUrl}/${dimensions}/${bg}/${color}?text=${label}`;
+    // Validate URL format
+    try {
+      new URL(url);
+      return url;
+    } catch {
+      // Fallback to a simpler format if URL parsing fails
+      return `${baseUrl}/${dimensions}/${bg}/${color}.png?text=${label}`;
+    }
   }
-  return `${baseUrl}/${dimensions}/${bg}/${color}`;
+  return `${baseUrl}/${dimensions}/${bg}/${color}.png`;
 }
 
 /**
