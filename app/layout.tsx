@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { CartProvider } from "@/contexts/CartContext";
-import "./suppress-warnings";
+import SuppressWarnings from "./suppress-warnings";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
+        <SuppressWarnings />
         <SessionProvider>
           <CartProvider>{children}</CartProvider>
         </SessionProvider>
