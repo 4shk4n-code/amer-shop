@@ -16,15 +16,15 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@prisma/client': require('path').resolve(process.cwd(), 'node_modules/.prisma/client'),
-      };
-    }
-    return config;
-  },
+        webpack: (config, { isServer }) => {
+          if (isServer) {
+            config.resolve.alias = {
+              ...config.resolve.alias,
+              '@prisma/client': require('path').resolve(process.cwd(), '.prisma/client'),
+            };
+          }
+          return config;
+        },
 };
 
 module.exports = nextConfig;
