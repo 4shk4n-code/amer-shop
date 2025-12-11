@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Search, ShoppingCart, Menu, ChevronDown, User, LogOut } from "lucide-react";
+import { Search, ShoppingCart, Menu, ChevronDown, User, LogOut, LayoutDashboard, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -78,6 +78,14 @@ export default function Header() {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
+            {session?.user && (session.user as any)?.role === "admin" && (
+              <Link href="/admin" className="hidden md:block">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Admin
+                </Button>
+              </Link>
+            )}
             {session?.user ? (
               <>
                 <div className="hidden md:block relative">
@@ -111,6 +119,17 @@ export default function Header() {
                           <p className="font-medium">{session.user.name}</p>
                           <p className="text-xs text-muted-foreground">{session.user.email}</p>
                         </div>
+                        {(session.user as any)?.role === "admin" && (
+                          <Link href="/admin" onClick={() => setUserMenuOpen(false)}>
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start mt-2"
+                            >
+                              <LayoutDashboard className="mr-2 h-4 w-4" />
+                              Admin Panel
+                            </Button>
+                          </Link>
+                        )}
                         <Button
                           variant="ghost"
                           className="w-full justify-start mt-2"
@@ -341,14 +360,27 @@ export default function Header() {
                 </>
               )}
               {session?.user && (
-                <li>
-                  <button
-                    onClick={handleSignOut}
-                    className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
-                  >
-                    Sign Out
-                  </button>
-                </li>
+                <>
+                  {(session.user as any)?.role === "admin" && (
+                    <li>
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                    </li>
+                  )}
+                  <li>
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </li>
+                </>
               )}
             </ul>
           </nav>
