@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { PlaceholderImage } from "@/components/ui/placeholder-image";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/currency";
 
 interface ProductPageProps {
   params: {
