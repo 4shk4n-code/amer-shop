@@ -21,6 +21,8 @@ jobs:
           git config user.email "actions@github.com"
 
       - name: Push to destination repo
+        env:
+          DESTINATION_TOKEN: ${{ secrets.DESTINATION_TOKEN }}
         run: |
           git remote add destination https://x-access-token:${{ secrets.DESTINATION_TOKEN }}@github.com/${{ secrets.DESTINATION_USERNAME }}/${{ secrets.DESTINATION_REPO }}.git
           git push destination main --force

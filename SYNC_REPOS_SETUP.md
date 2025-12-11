@@ -92,11 +92,26 @@ This guide will help you set up automatic syncing from one GitHub repository to 
 
 ## Troubleshooting
 
-### Issue: Workflow fails with "Permission denied"
+### Issue: Workflow fails with "Permission denied" (403 error)
 
-**Fix**: 
-- Make sure your Personal Access Token has `repo` permissions
-- Make sure the token is correctly added as `DESTINATION_TOKEN` secret
+**This is the most common issue!** Here's how to fix it:
+
+1. **Check your token permissions:**
+   - Go to https://github.com/settings/tokens
+   - Find your token (or create a new one)
+   - Make sure it has **`repo`** scope checked (Full control of private repositories)
+   - If it doesn't, you need to create a NEW token with `repo` permission
+
+2. **Update the secret:**
+   - Go to your source repository → Settings → Secrets → Actions
+   - Delete the old `DESTINATION_TOKEN` secret
+   - Create a new one with the token that has `repo` permissions
+   - Make sure there are no extra spaces when copying the token
+
+3. **Verify the destination repository:**
+   - Make sure the destination repository exists
+   - Make sure the token owner has access to the destination repository
+   - If the destination repo is private, the token MUST have `repo` scope
 
 ### Issue: "Repository not found"
 
