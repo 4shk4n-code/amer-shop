@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/contexts/CartContext";
+import { formatPrice } from "@/lib/currency";
 
 const categories = [
   { 
@@ -174,12 +175,20 @@ export default function Header() {
               </>
             )}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
+              <Button variant="ghost" size="sm" className="relative gap-2">
+                <div className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cart.itemCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
+                      {cart.itemCount > 99 ? "99+" : cart.itemCount}
+                    </span>
+                  )}
+                </div>
                 {cart.itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
-                    {cart.itemCount > 99 ? "99+" : cart.itemCount}
-                  </span>
+                  <div className="hidden sm:flex flex-col items-start">
+                    <span className="text-xs text-muted-foreground">Cart Total</span>
+                    <span className="text-sm font-bold text-primary">{formatPrice(cart.total)}</span>
+                  </div>
                 )}
                 <span className="sr-only">Shopping cart</span>
               </Button>
