@@ -39,7 +39,7 @@ export default async function SalePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {saleProducts.map((product) => {
+            {saleProducts.map((product: typeof saleProducts[0]) => {
               const discount =
                 product.originalPrice && product.originalPrice > product.price
                   ? Math.round(
