@@ -1,6 +1,6 @@
 /**
  * Generate placeholder image URLs
- * Uses placeholder.com service for dummy images
+ * Uses SVG data URIs for reliable placeholder images (no external requests)
  */
 
 export function getPlaceholderImage(
@@ -10,26 +10,28 @@ export function getPlaceholderImage(
   bgColor?: string,
   textColor?: string
 ): string {
-  // Use placeholder.com with proper URL encoding
-  const baseUrl = "https://via.placeholder.com";
-  const dimensions = `${width}x${height}`;
+  // Use SVG data URI instead of external service for reliability
   const bg = bgColor || "cccccc";
   const color = textColor || "969696";
-  const label = text ? encodeURIComponent(text) : "";
-
-  // Ensure the URL is properly formatted
-  if (label) {
-    const url = `${baseUrl}/${dimensions}/${bg}/${color}?text=${label}`;
-    // Validate URL format
-    try {
-      new URL(url);
-      return url;
-    } catch {
-      // Fallback to a simpler format if URL parsing fails
-      return `${baseUrl}/${dimensions}/${bg}/${color}.png?text=${label}`;
-    }
-  }
-  return `${baseUrl}/${dimensions}/${bg}/${color}.png`;
+  const label = text ? encodeURIComponent(text) : "Image";
+  
+  // Create SVG placeholder as data URI
+  const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#${bg}"/>
+      <text 
+        x="50%" 
+        y="50%" 
+        font-family="Arial, sans-serif" 
+        font-size="16" 
+        fill="#${color}" 
+        text-anchor="middle" 
+        dominant-baseline="middle"
+      >${label}</text>
+    </svg>
+  `.trim().replace(/\s+/g, ' ');
+  
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
 /**
