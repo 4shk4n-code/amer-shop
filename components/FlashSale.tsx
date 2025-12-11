@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Clock } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
+import { useCart } from "@/contexts/CartContext";
 
 const flashSaleProducts = [
   {
@@ -51,6 +52,22 @@ const flashSaleProducts = [
 ];
 
 export default function FlashSale() {
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent, product: typeof flashSaleProducts[0]) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+      unit: product.unit,
+      isRefurbished: false,
+    });
+  };
+
   return (
     <section className="py-16 bg-destructive/5">
       <div className="container mx-auto px-4">
@@ -112,7 +129,11 @@ export default function FlashSale() {
                         )}
                       </div>
                     </div>
-                    <Button size="sm" className="w-full gap-2">
+                    <Button 
+                      size="sm" 
+                      className="w-full gap-2"
+                      onClick={(e) => handleAddToCart(e, product)}
+                    >
                       <ShoppingCart className="h-4 w-4" />
                       Add to Cart
                     </Button>

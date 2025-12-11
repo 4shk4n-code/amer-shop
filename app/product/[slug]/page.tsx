@@ -7,6 +7,7 @@ import { ShoppingCart, Package, Truck, Shield, CheckCircle, Star, Calendar, Tag 
 import { PlaceholderImage } from "@/components/ui/placeholder-image";
 import { formatPrice } from "@/lib/currency";
 import Link from "next/link";
+import AddToCartButton from "@/components/AddToCartButton";
 
 // Force dynamic rendering since products can be added/updated
 export const dynamic = 'force-dynamic';
@@ -209,14 +210,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Add to Cart Button */}
             <div className="flex gap-4 pt-4">
-              <Button 
-                size="lg" 
-                className="flex-1 gap-2" 
-                disabled={product.stock === 0}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-              </Button>
+              <AddToCartButton
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  price: product.price,
+                  image: product.image,
+                  category: product.category,
+                  unit: product.unit,
+                  stock: product.stock,
+                }}
+                size="lg"
+                className="flex-1 gap-2"
+              />
             </div>
 
             {/* Features/Info Icons */}

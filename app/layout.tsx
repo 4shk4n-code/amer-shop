@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { CartProvider } from "@/contexts/CartContext";
+import { ToastProvider } from "@/components/ui/toast";
+import { CartToastConnector } from "@/components/CartToastConnector";
 import SuppressWarnings from "./suppress-warnings";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -27,7 +29,12 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <SuppressWarnings />
         <SessionProvider>
-          <CartProvider>{children}</CartProvider>
+          <ToastProvider>
+            <CartProvider>
+              <CartToastConnector />
+              {children}
+            </CartProvider>
+          </ToastProvider>
         </SessionProvider>
       </body>
     </html>

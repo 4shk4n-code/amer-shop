@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { CartItem, Cart } from "@/lib/types/cart";
 
 interface CartContextType {
@@ -11,6 +11,7 @@ interface CartContextType {
   clearCart: () => void;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  setToastCallback: (callback: (message: string) => void) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -18,6 +19,11 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const toastCallbackRef = useRef<((message: string) => void) | null>(null);
+  
+  const setToastCallback = (callback: (message: string) => void) => {
+    toastCallbackRef.current = callback;
+  };
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -42,13 +48,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       
       if (existingItem) {
         // If item already exists, increase quantity
-        return prevItems.map((i) =>
+        const updatedItems = prevItems.map((i) =>
           i.id === item.id
             ? { ...i, quantity: i.quantity + 1 }
             : i
         );
+        // Show toast notification
+        if (toastCallbackRef.current) {
+          toastCallbackRef.current(`${item.name} quantity updated in cart!`);
+        }
+        return updatedItems;
       } else {
         // Add new item with quantity 1
+        // Show toast notification
+        if (toastCallbackRef.current) {
+          toastCallbackRef.current(`${item.name} added to cart!`);
+        }
         return [...prevItems, { ...item, quantity: 1 }];
       }
     });
@@ -96,6 +111,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         isOpen,
         setIsOpen,
+        setToastCallback,
       }}
     >
       {children}
