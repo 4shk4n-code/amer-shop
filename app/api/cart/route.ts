@@ -24,14 +24,14 @@ export async function GET() {
     });
 
     const total = cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum: number, item: any) => sum + item.product.price * item.quantity,
       0
     );
 
     return NextResponse.json({
       items: cartItems,
       total,
-      itemCount: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+      itemCount: cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
     });
   } catch (error) {
     console.error("Error fetching cart:", error);

@@ -78,11 +78,11 @@ export async function POST(request: Request) {
 
     // Calculate totals
     const subtotal = cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
+      (sum: number, item: any) => sum + item.product.price * item.quantity,
       0
     );
     const tax = cartItems.reduce(
-      (sum, item) => sum + (item.product.tax || 0) * item.quantity,
+      (sum: number, item: any) => sum + (item.product.tax || 0) * item.quantity,
       0
     );
     const shipping = 0; // You can add shipping calculation logic
