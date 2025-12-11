@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { CartProvider } from "@/contexts/CartContext";
-import SuppressWarnings from "./suppress-warnings.tsx";
+import SuppressWarnings from "./suppress-warnings";
 
 const inter = Inter({ subsets: ["latin"] });
 
