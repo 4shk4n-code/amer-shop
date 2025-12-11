@@ -84,8 +84,7 @@ export default function NewProductPage() {
   };
 
   return (
-    <>
-      <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/admin/products">
           <Button variant="outline" size="sm">
@@ -114,7 +113,7 @@ export default function NewProductPage() {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-2 border border-border rounded-md bg-background"
-              placeholder="e.g., UHD 75\" TV"
+              placeholder='e.g., UHD 75" TV'
             />
           </div>
 
@@ -311,8 +310,7 @@ export default function NewProductPage() {
           </Link>
         </div>
       </form>
-      </div>
-    </>
+    </div>
   );
 }
 
