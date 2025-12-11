@@ -101,7 +101,7 @@ export async function POST(request: Request) {
         billingAddress,
         notes,
         items: {
-          create: cartItems.map((item) => ({
+          create: cartItems.map((item: any) => ({
             productId: item.productId,
             quantity: item.quantity,
             price: item.product.price,
