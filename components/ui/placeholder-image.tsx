@@ -44,7 +44,8 @@ export function PlaceholderImage({
   const imageSrc = isValidUrl ? finalSrc : placeholder;
 
   // Disable optimization for Unsplash images (they're already optimized)
-  const isUnsplash = imageSrc.includes("images.unsplash.com");
+  // Check the original src, not imageSrc (which might be placeholder)
+  const isUnsplash = src && src.includes("images.unsplash.com");
   const shouldOptimize = src && isValidUrl && !isUnsplash;
 
   if (fill) {
