@@ -506,7 +506,7 @@ async function main() {
           image: product.image || null,
           categoryId: product.categoryId,
           stock: product.stock,
-          unit: product.unit || null,
+          unit: (product as any).unit || null,
         },
         create: {
           id: product.id,
@@ -518,7 +518,7 @@ async function main() {
           image: product.image || null,
           categoryId: product.categoryId,
           stock: product.stock,
-          unit: product.unit || null,
+          unit: (product as any).unit || null,
         },
       });
     }
