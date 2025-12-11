@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -216,19 +217,32 @@ async function main() {
   });
 
   if (!existingAdmin) {
-    // Note: In production, use proper password hashing
-    // For now, we'll create the user without password (use Google OAuth or implement proper auth)
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    
     await prisma.user.create({
       data: {
         email: adminEmail,
         name: "Admin User",
         role: "admin",
+        password: hashedPassword,
       },
     });
     console.log("✅ Admin user created:", adminEmail);
-    console.log("⚠️  Note: Set up Google OAuth or implement password authentication");
+    console.log("🔑 Password:", adminPassword);
   } else {
-    console.log("ℹ️  Admin user already exists");
+    // Update existing admin with password if they don't have one
+    if (!existingAdmin.password) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await prisma.user.update({
+        where: { email: adminEmail },
+        data: { password: hashedPassword },
+      });
+      console.log("✅ Admin password set:", adminEmail);
+      console.log("🔑 Password:", adminPassword);
+    } else {
+      console.log("ℹ️  Admin user already exists with password");
+    }
   }
 }
 

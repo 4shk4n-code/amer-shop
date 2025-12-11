@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 // Shared seed function
 async function seedDatabase() {
@@ -198,12 +199,39 @@ async function seedDatabase() {
       });
     }
 
+  // Create/update admin user
+  const adminEmail = "admin@amershop.com";
+  const adminPassword = "admin123";
+  
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: adminEmail },
+  });
+
+  if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        name: "Admin User",
+        role: "admin",
+        password: hashedPassword,
+      },
+    });
+  } else if (!existingAdmin.password) {
+    // Update existing admin with password if they don't have one
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    await prisma.user.update({
+      where: { email: adminEmail },
+      data: { password: hashedPassword },
+    });
+  }
+
   // Don't disconnect - we're using the shared prisma instance
   // await prisma.$disconnect(); // Don't disconnect shared instance
 
   return {
     success: true,
-    message: `Seeded ${products.length} products and ${categories.length} categories`,
+    message: `Seeded ${products.length} products and ${categories.length} categories. Admin: ${adminEmail} / ${adminPassword}`,
   };
 }
 

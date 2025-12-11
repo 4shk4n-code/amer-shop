@@ -18,10 +18,24 @@ export default function SignInPage() {
     setError("");
     setLoading(true);
 
-    // For now, we'll just show an error since we need a backend
-    // In a real app, you'd call your API here
-    setError("Email/password authentication requires a backend. Please use Google Sign In.");
-    setLoading(false);
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Invalid email or password");
+        setLoading(false);
+      } else {
+        // Success - redirect will happen automatically
+        window.location.href = "/";
+      }
+    } catch (err) {
+      setError("Failed to sign in. Please try again.");
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {

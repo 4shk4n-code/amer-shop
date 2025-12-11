@@ -38,9 +38,17 @@ providers.push(
         return null;
       }
 
-      // For now, we'll create users without password hashing for Google OAuth users
-      // In production, you should hash passwords properly
-      // This is a placeholder - you'll need to implement proper password hashing
+      // If user has no password (OAuth-only user), reject
+      if (!user.password) {
+        return null;
+      }
+
+      // Verify password
+      const isValid = await bcrypt.compare(credentials.password, user.password);
+      if (!isValid) {
+        return null;
+      }
+
       return {
         id: user.id,
         email: user.email,
