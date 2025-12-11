@@ -13,25 +13,13 @@ export function getPlaceholderImage(
   // Use SVG data URI instead of external service for reliability
   const bg = bgColor || "cccccc";
   const color = textColor || "969696";
-  const label = text ? encodeURIComponent(text) : "Image";
+  const label = text || "Image";
   
-  // Create SVG placeholder as data URI
-  const svg = `
-    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="100%" height="100%" fill="#${bg}"/>
-      <text 
-        x="50%" 
-        y="50%" 
-        font-family="Arial, sans-serif" 
-        font-size="16" 
-        fill="#${color}" 
-        text-anchor="middle" 
-        dominant-baseline="middle"
-      >${label}</text>
-    </svg>
-  `.trim().replace(/\s+/g, ' ');
+  // Create SVG placeholder as data URI (browser-compatible)
+  const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#${bg}"/><text x="50%" y="50%" font-family="Arial,sans-serif" font-size="${Math.min(width / 10, 20)}" fill="#${color}" text-anchor="middle" dominant-baseline="middle">${encodeURIComponent(label)}</text></svg>`;
   
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+  // Use encodeURIComponent for proper URL encoding (works in browser)
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 /**
