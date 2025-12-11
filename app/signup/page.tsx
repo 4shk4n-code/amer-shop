@@ -39,10 +39,16 @@ export default function SignUpPage() {
 
   const handleGoogleSignUp = async () => {
     setError("");
+    setLoading(true);
     try {
-      await signIn("google", { callbackUrl: "/" });
-    } catch (err) {
-      setError("Failed to sign up with Google");
+      const result = await signIn("google", { 
+        callbackUrl: "/",
+        redirect: true,
+      });
+    } catch (err: any) {
+      console.error("Google sign up error:", err);
+      setError(err?.message || "Failed to sign up with Google. Please check your Google OAuth configuration.");
+      setLoading(false);
     }
   };
 
