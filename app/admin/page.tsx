@@ -36,7 +36,7 @@ export default async function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {stats.map((stat) => (
+        {stats.map((stat: any) => (
           <Link
             key={stat.label}
             href={stat.href}
@@ -65,7 +65,7 @@ export default async function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map((order) => (
+              {recentOrders.map((order: any) => (
                 <tr key={order.id} className="border-b">
                   <td className="p-2">
                     <Link

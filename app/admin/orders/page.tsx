@@ -37,7 +37,7 @@ export default async function AdminOrdersPage() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {orders.map((order: any) => (
               <tr key={order.id} className="border-b">
                 <td className="p-4">
                   <Link
