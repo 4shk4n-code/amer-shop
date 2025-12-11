@@ -1,0 +1,27 @@
+name: Sync to Another Repository
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual triggering from Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for proper sync
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Push to destination repo
+        run: |
+          git remote add destination https://x-access-token:${{ secrets.DESTINATION_TOKEN }}@github.com/${{ secrets.DESTINATION_USERNAME }}/${{ secrets.DESTINATION_REPO }}.git
+          git push destination main --force
+          git remote remove destination
