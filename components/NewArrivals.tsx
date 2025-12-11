@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 const newArrivals = [
   {
-    id: "new-1",
+    id: "tv-uhd-70",
     name: "UHD 70\" TV",
     price: 1425,
     category: "Electronics",
@@ -30,7 +30,7 @@ const newArrivals = [
     image: "/images/car-parts/WhatsApp Image 2025-12-09 at 4.41.54 PM (1).jpeg",
   },
   {
-    id: "new-4",
+    id: "tv-fhd-50",
     name: "FHD 50\" TV",
     price: 628,
     category: "Electronics",

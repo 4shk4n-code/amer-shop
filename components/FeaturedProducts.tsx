@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 const featuredProducts = [
   {
-    id: "featured-1",
+    id: "tv-uhd-75",
     name: "UHD 75\" TV",
     price: 1615,
     category: "Electronics",
@@ -30,7 +30,7 @@ const featuredProducts = [
     image: "/images/car-parts/WhatsApp Image 2025-12-09 at 4.41.54 PM (1).jpeg",
   },
   {
-    id: "featured-4",
+    id: "tv-uhd-55",
     name: "UHD 55\" TV",
     price: 780,
     category: "Electronics",

@@ -9,7 +9,7 @@ import { formatPrice } from "@/lib/currency";
 
 const flashSaleProducts = [
   {
-    id: "flash-1",
+    id: "tv-fhd-32",
     name: "FHD 32\" TV",
     price: 270,
     originalPrice: 350,
@@ -36,7 +36,7 @@ const flashSaleProducts = [
     image: "/images/car-parts/WhatsApp Image 2025-12-09 at 4.41.56 PM.jpeg",
   },
   {
-    id: "flash-4",
+    id: "tv-fhd-43",
     name: "FHD 43\" TV",
     price: 408,
     originalPrice: 550,
