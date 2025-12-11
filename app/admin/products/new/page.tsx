@@ -84,7 +84,8 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <>
+      <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/admin/products">
           <Button variant="outline" size="sm">
@@ -310,7 +311,8 @@ export default function NewProductPage() {
           </Link>
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 }
 
