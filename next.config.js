@@ -16,10 +16,11 @@ const nextConfig = {
       },
     ],
   },
-        webpack: (config, { isServer }) => {
-          // No custom alias needed - using default Prisma output location
-          return config;
-        },
+  transpilePackages: ['.prisma', '@prisma/client'],
+  webpack: (config, { isServer }) => {
+    // No custom alias needed - using default Prisma output location
+    return config;
+  },
 };
 
 module.exports = nextConfig;
