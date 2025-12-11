@@ -1,10 +1,9 @@
-// @ts-ignore - Prisma Client is generated to custom location
-const { PrismaClient } = require('../node_modules/.prisma/client');
-
-type PrismaClientType = typeof PrismaClient;
+// Use webpack alias configured in next.config.js
+// @ts-ignore - Webpack alias resolves to custom Prisma location
+import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: InstanceType<PrismaClientType> | undefined
+  prisma: PrismaClient | undefined
 }
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient()
