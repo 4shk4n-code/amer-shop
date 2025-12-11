@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
-import PlaceholderImage from "@/components/PlaceholderImage";
+import { PlaceholderImage } from "@/components/ui/placeholder-image";
 import { formatPrice } from "@/lib/utils";
 
 interface ProductPageProps {
