@@ -1,5 +1,7 @@
+"use client";
+
 // Suppress harmless warnings from third-party libraries and Vercel widgets
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+if (typeof window !== 'undefined') {
   const originalWarn = console.warn;
   const originalError = console.error;
 
@@ -10,7 +12,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
       return;
     }
     // Suppress Dialog accessibility warnings from Vercel widgets
-    if (message.includes('DialogContent') || message.includes('DialogTitle')) {
+    if (message.includes('DialogContent') || message.includes('DialogTitle') || message.includes('Description')) {
       return;
     }
     originalWarn.apply(console, args);
