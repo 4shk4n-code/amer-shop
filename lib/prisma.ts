@@ -88,21 +88,38 @@ try {
     }
   } else {
     // Check if DATABASE_URL is for PostgreSQL (not SQLite)
-    // If schema is SQLite but DATABASE_URL is PostgreSQL, skip initialization during build
+    // Since schema is SQLite, we can't use PostgreSQL DATABASE_URL
+    // Skip initialization to avoid "unknown variant postgres" errors
     const isPostgreSQL = !dbUrl.startsWith('file:') && (
       dbUrl.startsWith('postgres://') || 
       dbUrl.startsWith('postgresql://') ||
-      dbUrl.includes('@') // PostgreSQL URLs typically have @ symbol
+      dbUrl.includes('@') || // PostgreSQL URLs typically have @ symbol
+      dbUrl.includes('postgres') // Check for postgres in URL
     );
     
-    if (isPostgreSQL && process.env.NODE_ENV === 'production') {
-      // During build with PostgreSQL but SQLite schema, skip Prisma initialization
-      // This will be handled at runtime when the actual database is available
-      console.warn('⚠️  DATABASE_URL is PostgreSQL but schema is SQLite. Skipping Prisma initialization during build.');
-      prismaInstance = null;
+    if (isPostgreSQL) {
+      // Schema is SQLite but DATABASE_URL is PostgreSQL - skip initialization
+      // This prevents "unknown variant postgres" errors during build
+      if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+        console.warn('⚠️  DATABASE_URL is PostgreSQL but schema is SQLite. Skipping Prisma initialization.');
+        prismaInstance = null;
+      } else {
+        // In development, still try but catch errors
+        try {
+          prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+        } catch (error) {
+          console.warn('⚠️  Failed to initialize Prisma with PostgreSQL URL (schema is SQLite). Skipping.');
+          prismaInstance = null;
+        }
+      }
     } else {
-      // Try to create PrismaClient
-      prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+      // DATABASE_URL is SQLite, proceed normally
+      try {
+        prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+      } catch (error) {
+        console.error('❌ Failed to create PrismaClient:', error);
+        prismaInstance = null;
+      }
     }
   }
 } catch (error) {
@@ -112,12 +129,9 @@ try {
     // If error is about postgres variant, skip initialization gracefully
     if (error.message.includes('unknown variant') || error.message.includes('postgres')) {
       console.warn('⚠️  Skipping Prisma initialization due to database type mismatch.');
-      prismaInstance = null;
     }
   }
-  if (!prismaInstance) {
-    prismaInstance = null;
-  }
+  prismaInstance = null;
 }
 
 // Export prisma - may be null if initialization failed or DATABASE_URL is missing
