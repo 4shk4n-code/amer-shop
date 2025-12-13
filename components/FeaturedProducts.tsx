@@ -22,6 +22,7 @@ const featuredProducts = [
     category: "Home & Garden",
     description: "Premium artificial grass, 50mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "featured-3",

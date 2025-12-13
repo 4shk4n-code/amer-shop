@@ -24,6 +24,7 @@ const flashSaleProducts = [
     category: "Home & Garden",
     description: "Eco-friendly artificial grass, 22mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "flash-3",

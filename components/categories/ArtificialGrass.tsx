@@ -14,6 +14,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Artificial grass, 50mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-gfg-46",
@@ -22,6 +23,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Artificial grass, 46mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-gfg-36",
@@ -30,6 +32,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Artificial grass, 36mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-gfg-30",
@@ -38,6 +41,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Artificial grass, 30mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-eco-33",
@@ -46,6 +50,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Eco-friendly artificial grass, 33mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-eco-22",
@@ -54,6 +59,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Eco-friendly artificial grass, 22mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-standard-26",
@@ -62,6 +68,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Standard artificial grass, 26mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-rml-n3-46",
@@ -70,6 +77,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "RML N3 artificial grass, 46mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-rml-n3-35",
@@ -78,6 +86,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "RML N3 artificial grass, 35mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-rml-n3-30",
@@ -86,6 +95,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "RML N3 artificial grass, 30mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-astroturfing-52",
@@ -94,6 +104,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Astroturfing artificial grass, 52mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-suitable-52",
@@ -102,6 +113,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Suitable artificial grass, 52mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-thinkpar-gmc-50",
@@ -110,6 +122,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Thinkpar GMC artificial grass, 50mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-alex-mc3-50",
@@ -118,6 +131,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Alex MC-3 artificial grass, 50mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
   {
     id: "grass-coffee-ae001br-50",
@@ -126,6 +140,7 @@ const artificialGrassProducts = [
     category: "Artificial Grass",
     description: "Coffee AE001BR artificial grass, 50mm thickness",
     unit: "PER SQM",
+    image: "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=400&h=400&fit=crop",
   },
 ];
 
