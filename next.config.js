@@ -23,11 +23,24 @@ const nextConfig = {
   },
   transpilePackages: ['.prisma', '@prisma/client'],
   webpack: (config, { isServer }) => {
+    // Exclude deploy-temp directory from compilation
+    config.module.rules.forEach((rule) => {
+      if (rule.test && rule.test.toString().includes('tsx|ts')) {
+        if (!rule.exclude) {
+          rule.exclude = [];
+        }
+        if (Array.isArray(rule.exclude)) {
+          rule.exclude.push(/deploy-temp/);
+        }
+      }
+    });
+    
     // Suppress deprecation warnings from dependencies in production
     if (process.env.NODE_ENV === 'production') {
       config.ignoreWarnings = [
         { module: /node_modules/ },
         { message: /DEPRECATED/ },
+        { module: /deploy-temp/ },
       ];
     }
     // No custom alias needed - using default Prisma output location
