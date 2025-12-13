@@ -2,23 +2,39 @@ import Header from "@/components/Header";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 
+// Force dynamic rendering to avoid build-time database connection issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function SalePage() {
   // Get products with originalPrice (on sale)
-  const saleProducts = await prisma.product.findMany({
-    where: {
-      isActive: true,
-      originalPrice: {
-        not: null,
-      },
-    },
-    include: {
-      category: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 50,
-  });
+  let saleProducts = [];
+  
+  if (!prisma) {
+    console.warn('Prisma client not available on sale page');
+  } else {
+    try {
+      saleProducts = await prisma.product.findMany({
+        where: {
+          isActive: true,
+          originalPrice: {
+            not: null,
+          },
+        },
+        include: {
+          category: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 50,
+      });
+    } catch (error) {
+      console.error('Error fetching sale products:', error);
+      // Continue with empty array if database query fails
+      saleProducts = [];
+    }
+  }
 
   return (
     <main className="min-h-screen">

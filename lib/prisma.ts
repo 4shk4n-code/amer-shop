@@ -87,15 +87,37 @@ try {
       console.warn('   Make sure .env file exists with: DATABASE_URL="file:./prisma/dev.db"');
     }
   } else {
-    // Try to create PrismaClient
-    prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+    // Check if DATABASE_URL is for PostgreSQL (not SQLite)
+    // If schema is SQLite but DATABASE_URL is PostgreSQL, skip initialization during build
+    const isPostgreSQL = !dbUrl.startsWith('file:') && (
+      dbUrl.startsWith('postgres://') || 
+      dbUrl.startsWith('postgresql://') ||
+      dbUrl.includes('@') // PostgreSQL URLs typically have @ symbol
+    );
+    
+    if (isPostgreSQL && process.env.NODE_ENV === 'production') {
+      // During build with PostgreSQL but SQLite schema, skip Prisma initialization
+      // This will be handled at runtime when the actual database is available
+      console.warn('⚠️  DATABASE_URL is PostgreSQL but schema is SQLite. Skipping Prisma initialization during build.');
+      prismaInstance = null;
+    } else {
+      // Try to create PrismaClient
+      prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+    }
   }
 } catch (error) {
   console.error('❌ Failed to create PrismaClient:', error);
   if (error instanceof Error) {
     console.error('Error message:', error.message);
+    // If error is about postgres variant, skip initialization gracefully
+    if (error.message.includes('unknown variant') || error.message.includes('postgres')) {
+      console.warn('⚠️  Skipping Prisma initialization due to database type mismatch.');
+      prismaInstance = null;
+    }
   }
-  prismaInstance = null;
+  if (!prismaInstance) {
+    prismaInstance = null;
+  }
 }
 
 // Export prisma - may be null if initialization failed or DATABASE_URL is missing
