@@ -7,6 +7,22 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Disable caching for real-time product updates
 
 export default async function ProductsPage() {
+  // Check if prisma is available
+  if (!prisma) {
+    return (
+      <main className="min-h-screen">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-lg">
+              Database connection unavailable. Please check your configuration.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   // Get all active products
   const products = await prisma.product.findMany({
     where: {

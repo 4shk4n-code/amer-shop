@@ -1,13 +1,41 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+
+// Ensure environment variables are loaded
+if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
+  try {
+    require('dotenv').config();
+  } catch (e) {
+    // dotenv might not be available, that's okay
+  }
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 // Create PrismaClient with proper configuration for Prisma 7
-// Prisma 7 requires either adapter or accelerateUrl when using engine type "client"
+// Prisma 7 requires an adapter for SQLite
 function createPrismaClient() {
+  const dbUrl = process.env.DATABASE_URL;
+  
+  if (!dbUrl) {
+    throw new Error('DATABASE_URL is required');
+  }
+
+  // Extract file path from DATABASE_URL (format: "file:./prisma/dev.db")
+  const dbPath = dbUrl.replace(/^file:/, '');
+  const absoluteDbPath = dbPath.startsWith('./') 
+    ? require('path').join(process.cwd(), dbPath.slice(2))
+    : dbPath;
+
+  // Create SQLite adapter for Prisma 7
+  const adapter = new PrismaBetterSqlite3({
+    url: absoluteDbPath,
+  });
+
   const options: any = {
+    adapter: adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   }
 
@@ -18,34 +46,46 @@ function createPrismaClient() {
     (process.env.DATABASE_URL?.includes('accelerate.prisma-data.net') ? process.env.DATABASE_URL : null)
 
   if (accelerateUrl) {
-    // Use Prisma Accelerate
+    // Use Prisma Accelerate instead of adapter
     options.accelerateUrl = accelerateUrl
-  } else if (process.env.DATABASE_URL) {
-    // For SQLite or PostgreSQL, use adapter with DATABASE_URL
-    // Prisma 7 reads DATABASE_URL from environment automatically
-    // No explicit adapter needed for standard connections
-  } else {
-    // During build, DATABASE_URL might not be available
-    // Create a minimal client that will work for type checking
-    // It will fail at runtime if actually used without DATABASE_URL
+    // Don't use adapter if using Accelerate
+    delete options.adapter
   }
 
-  return new PrismaClient(options)
+  try {
+    return new PrismaClient(options)
+  } catch (error) {
+    console.error('Error creating PrismaClient:', error);
+    throw error;
+  }
 }
 
 // Create prisma client with error handling
 let prismaInstance: PrismaClient | null = null;
 
+// Initialize Prisma client
 try {
-  prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+  const dbUrl = process.env.DATABASE_URL;
+  
+  if (!dbUrl) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️  DATABASE_URL not found. Prisma client will not be available.');
+      console.warn('   Make sure .env file exists with: DATABASE_URL="file:./prisma/dev.db"');
+    }
+  } else {
+    // Try to create PrismaClient
+    prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+  }
 } catch (error) {
-  console.error('Failed to create PrismaClient:', error);
-  // Set to null so we can check if it's available
+  console.error('❌ Failed to create PrismaClient:', error);
+  if (error instanceof Error) {
+    console.error('Error message:', error.message);
+  }
   prismaInstance = null;
 }
 
-// Export prisma, but it might be null if initialization failed
-export const prisma = prismaInstance as PrismaClient
+// Export prisma - may be null if initialization failed or DATABASE_URL is missing
+export const prisma = prismaInstance
 
 // Export type for use in other files
 export type { PrismaClient }

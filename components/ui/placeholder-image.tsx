@@ -40,14 +40,50 @@ export function PlaceholderImage({
   const finalSrc = (src && src.trim() !== "") ? src : placeholder;
   
   // Ensure finalSrc is a valid URL - if not, use placeholder
-  const isValidUrl = finalSrc.startsWith("http://") || finalSrc.startsWith("https://") || finalSrc.startsWith("/");
+  const isValidUrl = finalSrc && (finalSrc.startsWith("http://") || finalSrc.startsWith("https://") || finalSrc.startsWith("/"));
   const imageSrc = isValidUrl ? finalSrc : placeholder;
 
-  // Disable optimization for Unsplash images (they're already optimized)
-  // Check the original src, not imageSrc (which might be placeholder)
-  const isUnsplash = src && src.includes("images.unsplash.com");
-  const shouldOptimize = src && isValidUrl && !isUnsplash;
+  // Check if this is an external URL (not a local path or data URI)
+  const isExternalUrl = src ? (src.startsWith("http://") || src.startsWith("https://")) : false;
+  const isDataUri = imageSrc ? imageSrc.startsWith("data:") : false;
+  
+  // For external URLs, use regular img tag to avoid Next.js optimization issues
+  // For local paths and data URIs, use Next.js Image component
+  if (isExternalUrl && !isDataUri) {
+    if (fill) {
+      return (
+        <img
+          src={imageSrc}
+          alt={alt}
+          className={className}
+          style={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            objectFit: "cover",
+          }}
+          loading={priority ? "eager" : "lazy"}
+        />
+      );
+    }
+    
+    return (
+      <img
+        src={imageSrc}
+        alt={alt}
+        width={width || 400}
+        height={height || 300}
+        className={className}
+        loading={priority ? "eager" : "lazy"}
+      />
+    );
+  }
 
+  // Use Next.js Image component for local paths and data URIs
   if (fill) {
     return (
       <Image
@@ -57,7 +93,7 @@ export function PlaceholderImage({
         className={className}
         priority={priority}
         sizes={sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-        unoptimized={!shouldOptimize}
+        unoptimized={isDataUri}
       />
     );
   }
@@ -70,7 +106,7 @@ export function PlaceholderImage({
       height={height || 300}
       className={className}
       priority={priority}
-      unoptimized={!shouldOptimize}
+      unoptimized={isDataUri}
     />
   );
 }

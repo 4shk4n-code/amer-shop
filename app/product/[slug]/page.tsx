@@ -20,22 +20,34 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  // Try to find by slug first, then by id as fallback
-  let product = await prisma.product.findUnique({
-    where: { slug: params.slug },
-    include: {
-      category: true,
-    },
-  });
+  // Check if prisma is available
+  if (!prisma) {
+    console.error('Prisma client is not available. Please check DATABASE_URL environment variable.');
+    notFound();
+  }
 
-  // If not found by slug, try by id (for hardcoded product IDs like "featured-1")
-  if (!product) {
+  // Try to find by slug first, then by id as fallback
+  let product;
+  try {
     product = await prisma.product.findUnique({
-      where: { id: params.slug },
+      where: { slug: params.slug },
       include: {
         category: true,
       },
     });
+
+    // If not found by slug, try by id (for hardcoded product IDs like "featured-1")
+    if (!product) {
+      product = await prisma.product.findUnique({
+        where: { id: params.slug },
+        include: {
+          category: true,
+        },
+      });
+    }
+  } catch (error) {
+    console.error('Database error:', error);
+    notFound();
   }
 
   if (!product) {
@@ -51,17 +63,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : 0;
 
   // Get related products from same category
-  const relatedProducts = await prisma.product.findMany({
-    where: {
-      categoryId: product.categoryId,
-      id: { not: product.id },
-      isActive: true,
-    },
-    take: 4,
-    include: {
-      category: true,
-    },
-  });
+  let relatedProducts = [];
+  try {
+    relatedProducts = await prisma.product.findMany({
+      where: {
+        categoryId: product.categoryId,
+        id: { not: product.id },
+        isActive: true,
+      },
+      take: 4,
+      include: {
+        category: true,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    // Continue without related products if there's an error
+  }
 
   return (
     <main className="min-h-screen">
@@ -91,15 +109,22 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   -{discount}% OFF
                 </div>
               )}
-              <PlaceholderImage
-                src={product.image || allImages[0]}
-                alt={product.name}
-                fill
-                className="object-cover"
-                placeholderText={product.name}
-                placeholderWidth={800}
-                placeholderHeight={800}
-              />
+              {product.image || allImages[0] ? (
+                <PlaceholderImage
+                  src={product.image || allImages[0]}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  placeholderText={product.name}
+                  placeholderWidth={800}
+                  placeholderHeight={800}
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                  <span className="text-gray-400">No Image Available</span>
+                </div>
+              )}
             </div>
             {allImages.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
@@ -375,13 +400,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
       </div>
-      <footer className="border-t mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 AMERSHOP!. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

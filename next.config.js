@@ -14,8 +14,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
     ],
-    // Unsplash images will use unoptimized prop in PlaceholderImage component
+    // External images will use unoptimized prop in PlaceholderImage component
   },
   transpilePackages: ['.prisma', '@prisma/client'],
   webpack: (config, { isServer }) => {
