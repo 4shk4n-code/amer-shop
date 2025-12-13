@@ -15,7 +15,7 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 // Create PrismaClient with proper configuration for Prisma 7
-// Prisma 7 requires an adapter for SQLite
+// Prisma 7 requires an adapter for SQLite, but not for PostgreSQL
 function createPrismaClient() {
   const dbUrl = process.env.DATABASE_URL;
   
@@ -23,20 +23,34 @@ function createPrismaClient() {
     throw new Error('DATABASE_URL is required');
   }
 
-  // Extract file path from DATABASE_URL (format: "file:./prisma/dev.db")
-  const dbPath = dbUrl.replace(/^file:/, '');
-  const absoluteDbPath = dbPath.startsWith('./') 
-    ? require('path').join(process.cwd(), dbPath.slice(2))
-    : dbPath;
-
-  // Create SQLite adapter for Prisma 7
-  const adapter = new PrismaBetterSqlite3({
-    url: absoluteDbPath,
-  });
-
   const options: any = {
-    adapter: adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  }
+
+  // Check if DATABASE_URL is for SQLite (starts with "file:")
+  const isSQLite = dbUrl.startsWith('file:');
+  
+  if (isSQLite) {
+    // Extract file path from DATABASE_URL (format: "file:./prisma/dev.db")
+    const dbPath = dbUrl.replace(/^file:/, '');
+    const absoluteDbPath = dbPath.startsWith('./') 
+      ? require('path').join(process.cwd(), dbPath.slice(2))
+      : dbPath;
+
+    // Create SQLite adapter for Prisma 7 (only needed for SQLite)
+    try {
+      const Database = require('better-sqlite3');
+      const sqlite = new Database(absoluteDbPath);
+      const adapter = new PrismaBetterSqlite3(sqlite);
+      options.adapter = adapter;
+    } catch (error) {
+      console.warn('Failed to create SQLite adapter, trying without adapter:', error);
+      // If adapter fails, try without it (might work in some cases)
+    }
+  } else {
+    // For PostgreSQL or other databases, don't use SQLite adapter
+    // Prisma will use the standard connection
+    // No adapter needed for PostgreSQL
   }
 
   // Check for Prisma Accelerate URL (multiple possible env var names)
