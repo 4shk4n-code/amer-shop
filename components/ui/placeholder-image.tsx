@@ -52,6 +52,7 @@ export function PlaceholderImage({
   if (isExternalUrl && !isDataUri) {
     if (fill) {
       return (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageSrc}
           alt={alt}
@@ -72,6 +73,7 @@ export function PlaceholderImage({
     }
     
     return (
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={imageSrc}
         alt={alt}

@@ -35,7 +35,7 @@ export default function ShippingPage() {
             <h2 className="text-2xl font-semibold mb-4">4. Order Tracking</h2>
             <p className="text-gray-700 mb-4">
               Once your order ships, you will receive a tracking number via email. You can use this
-              to track your package's progress.
+              to track your package&apos;s progress.
             </p>
           </section>
         </div>
