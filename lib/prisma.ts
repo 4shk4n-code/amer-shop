@@ -21,9 +21,9 @@ function createPrismaClient() {
     // Use Prisma Accelerate
     options.accelerateUrl = accelerateUrl
   } else if (process.env.DATABASE_URL) {
-    // Standard PostgreSQL connection
-    // For Prisma 7, we might need to use the standard connection differently
-    // Try without explicit options first - Prisma should read DATABASE_URL from env
+    // For SQLite or PostgreSQL, use adapter with DATABASE_URL
+    // Prisma 7 reads DATABASE_URL from environment automatically
+    // No explicit adapter needed for standard connections
   } else {
     // During build, DATABASE_URL might not be available
     // Create a minimal client that will work for type checking
@@ -33,7 +33,19 @@ function createPrismaClient() {
   return new PrismaClient(options)
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient()
+// Create prisma client with error handling
+let prismaInstance: PrismaClient | null = null;
+
+try {
+  prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+} catch (error) {
+  console.error('Failed to create PrismaClient:', error);
+  // Set to null so we can check if it's available
+  prismaInstance = null;
+}
+
+// Export prisma, but it might be null if initialization failed
+export const prisma = prismaInstance as PrismaClient
 
 // Export type for use in other files
 export type { PrismaClient }

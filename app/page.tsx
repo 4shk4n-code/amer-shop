@@ -25,13 +25,6 @@ export default function Home() {
       <FeaturedProducts />
       <NewArrivals />
       <CategoryGrid />
-      <footer className="border-t mt-16">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 AMERSHOP!. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </main>
   );
 }

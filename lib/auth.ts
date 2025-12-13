@@ -41,51 +41,93 @@ providers.push(
       const email = credentials.email as string;
       const password = credentials.password as string;
 
-      const user = await prisma.user.findUnique({
-        where: { email },
-      });
+      try {
+        if (!prisma) {
+          console.warn('Prisma not available, cannot authenticate');
+          return null;
+        }
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
 
-      if (!user) {
+        if (!user) {
+          return null;
+        }
+
+        // If user has no password (OAuth-only user), reject
+        if (!user.password) {
+          return null;
+        }
+
+        // Verify password
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+        };
+      } catch (error) {
+        console.error('Database error in authorize:', error);
         return null;
       }
-
-      // If user has no password (OAuth-only user), reject
-      if (!user.password) {
-        return null;
-      }
-
-      // Verify password
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
-        return null;
-      }
-
-      return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        image: user.image,
-        role: user.role,
-      };
     },
   })
 );
 
+// Temporarily disable PrismaAdapter to get the site working
+// We'll re-enable it once Prisma connection is fixed
+let adapter: any = undefined;
+// TODO: Re-enable adapter once Prisma connection is working
+// try {
+//   if (process.env.DATABASE_URL) {
+//     adapter = PrismaAdapter(prisma) as any;
+//   }
+// } catch (error) {
+//   console.warn('PrismaAdapter initialization failed, using JWT-only mode:', error);
+//   adapter = undefined;
+// }
+
 export const authConfig = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: adapter,
   providers: providers,
   pages: {
     signIn: "/signin",
   },
   callbacks: {
     async session({ session, token, user }) {
-      if (session.user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: session.user.email! },
-        });
-        if (dbUser) {
-          session.user.id = dbUser.id;
-          session.user.role = dbUser.role;
+      // Skip database entirely if adapter is disabled (JWT-only mode)
+      if (!adapter) {
+        if (token.role) {
+          (session.user as any).role = token.role;
+        }
+        if (token.sub) {
+          (session.user as any).id = token.sub;
+        }
+        return session;
+      }
+      
+      // Only query database if adapter is enabled and Prisma is available
+      if (session.user && prisma) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: session.user.email! },
+          });
+          if (dbUser) {
+            session.user.id = dbUser.id;
+            session.user.role = dbUser.role;
+          }
+        } catch (error) {
+          // If database query fails, use token data instead
+          console.warn('Database query failed in session callback, using token:', error);
+          if (token.role) {
+            (session.user as any).role = token.role;
+          }
         }
       }
       return session;

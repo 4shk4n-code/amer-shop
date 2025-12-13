@@ -6,6 +6,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { ToastProvider } from "@/components/ui/toast";
 import { CartToastConnector } from "@/components/CartToastConnector";
 import SuppressWarnings from "./suppress-warnings";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,7 +33,10 @@ export default function RootLayout({
           <ToastProvider>
             <CartProvider>
               <CartToastConnector />
-              {children}
+              <div className="flex flex-col min-h-screen">
+                {children}
+                <Footer />
+              </div>
             </CartProvider>
           </ToastProvider>
         </SessionProvider>
