@@ -1,8 +1,8 @@
 import { handlers } from "@/lib/auth";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 // Wrap handlers with error handling
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { GET } = handlers;
     return await GET(request);
@@ -15,7 +15,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { POST } = handlers;
     return await POST(request);
