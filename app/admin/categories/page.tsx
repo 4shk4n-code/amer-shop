@@ -4,14 +4,33 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 export default async function CategoriesPage() {
-  const categories = await prisma.category.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      _count: {
-        select: { products: true },
+  if (!prisma) {
+    return (
+      <div>
+        <h1 className="text-3xl font-bold mb-6">Categories</h1>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            Database connection unavailable. Please check your configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  let categories = [];
+  try {
+    categories = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        _count: {
+          select: { products: true },
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    categories = [];
+  }
 
   return (
     <div>

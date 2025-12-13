@@ -5,6 +5,13 @@ import { auth } from "@/lib/auth";
 // GET user's cart
 export async function GET() {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 503 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,6 +52,13 @@ export async function GET() {
 // POST add item to cart
 export async function POST(request: Request) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 503 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -88,6 +102,13 @@ export async function POST(request: Request) {
 // DELETE remove item from cart
 export async function DELETE(request: Request) {
   try {
+    if (!prisma) {
+      return NextResponse.json(
+        { error: "Database not available" },
+        { status: 503 }
+      );
+    }
+
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

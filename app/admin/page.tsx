@@ -2,26 +2,50 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function AdminDashboard() {
-  const [productsCount, ordersCount, usersCount, categoriesCount] =
-    await Promise.all([
-      prisma.product.count(),
-      prisma.order.count(),
-      prisma.user.count(),
-      prisma.category.count(),
-    ]);
+  if (!prisma) {
+    return (
+      <div>
+        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            Database connection unavailable. Please check your configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-  const recentOrders = await prisma.order.findMany({
-    take: 5,
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
+  let productsCount = 0;
+  let ordersCount = 0;
+  let usersCount = 0;
+  let categoriesCount = 0;
+  let recentOrders = [];
+
+  try {
+    [productsCount, ordersCount, usersCount, categoriesCount] =
+      await Promise.all([
+        prisma.product.count(),
+        prisma.order.count(),
+        prisma.user.count(),
+        prisma.category.count(),
+      ]);
+
+    recentOrders = await prisma.order.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
         },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data:", error);
+    // Continue with default values
+  }
 
   const stats = [
     { label: "Total Products", value: productsCount, href: "/admin/products" },

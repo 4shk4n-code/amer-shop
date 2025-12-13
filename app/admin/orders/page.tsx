@@ -2,22 +2,41 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
 export default async function AdminOrdersPage() {
-  const orders = await prisma.order.findMany({
-    include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
+  if (!prisma) {
+    return (
+      <div>
+        <h1 className="text-3xl font-bold mb-8">Orders</h1>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            Database connection unavailable. Please check your configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  let orders = [];
+  try {
+    orders = await prisma.order.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        items: {
+          include: {
+            product: true,
+          },
         },
       },
-      items: {
-        include: {
-          product: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    orders = [];
+  }
 
   return (
     <div>

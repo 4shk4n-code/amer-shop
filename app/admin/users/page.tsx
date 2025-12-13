@@ -2,14 +2,35 @@ import { prisma } from "@/lib/prisma";
 import { Badge } from "@/components/ui/badge";
 
 export default async function UsersPage() {
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { orders: true },
+  if (!prisma) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Users</h1>
+        </div>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            Database connection unavailable. Please check your configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  let users = [];
+  try {
+    users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: { orders: true },
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    users = [];
+  }
 
   return (
     <div>

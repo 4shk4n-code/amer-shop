@@ -3,12 +3,33 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default async function AdminProductsPage() {
-  const products = await prisma.product.findMany({
-    include: {
-      category: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  if (!prisma) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Products</h1>
+        </div>
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">
+            Database connection unavailable. Please check your configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  let products = [];
+  try {
+    products = await prisma.product.findMany({
+      include: {
+        category: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    products = [];
+  }
 
   return (
     <div>
