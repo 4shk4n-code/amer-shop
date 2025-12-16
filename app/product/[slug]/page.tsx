@@ -9,6 +9,7 @@ import { PlaceholderImage } from "@/components/ui/placeholder-image";
 import { formatPrice } from "@/lib/currency";
 import Link from "next/link";
 import AddToCartButton from "@/components/AddToCartButton";
+import WishlistButton from "@/components/WishlistButton";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
 
@@ -391,6 +392,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 }}
                 size="lg"
                 className="flex-1 gap-2"
+              />
+              <WishlistButton
+                productId={product.id}
+                size="lg"
+                variant="outline"
+                className="px-4"
               />
             </div>
 

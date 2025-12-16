@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
 import { useCart } from "@/contexts/CartContext";
+import WishlistButton from "@/components/WishlistButton";
 
 interface ProductCardProps {
   id: string;
@@ -67,6 +68,9 @@ export default function ProductCard({
               -{discount}%
             </Badge>
           )}
+          <div className="absolute top-2 left-2 z-10">
+            <WishlistButton productId={id} />
+          </div>
           <PlaceholderImage
             src={image}
             alt={name || "Product image"}

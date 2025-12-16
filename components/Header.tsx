@@ -121,11 +121,20 @@ export default function Header() {
                           <p className="font-medium">{session.user.name}</p>
                           <p className="text-xs text-muted-foreground">{session.user.email}</p>
                         </div>
+                        <Link href="/profile" onClick={() => setUserMenuOpen(false)}>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start mt-2"
+                          >
+                            <User className="mr-2 h-4 w-4" />
+                            My Profile
+                          </Button>
+                        </Link>
                         {(session.user as any)?.role === "admin" && (
                           <Link href="/admin" onClick={() => setUserMenuOpen(false)}>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start mt-2"
+                              className="w-full justify-start"
                             >
                               <LayoutDashboard className="mr-2 h-4 w-4" />
                               Admin Panel
@@ -134,7 +143,7 @@ export default function Header() {
                         )}
                         <Button
                           variant="ghost"
-                          className="w-full justify-start mt-2"
+                          className="w-full justify-start"
                           onClick={handleSignOut}
                         >
                           <LogOut className="mr-2 h-4 w-4" />
@@ -371,6 +380,15 @@ export default function Header() {
               )}
               {session?.user && (
                 <>
+                  <li>
+                    <Link
+                      href="/profile"
+                      className="block px-4 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      My Profile
+                    </Link>
+                  </li>
                   {(session.user as any)?.role === "admin" && (
                     <li>
                       <Link
