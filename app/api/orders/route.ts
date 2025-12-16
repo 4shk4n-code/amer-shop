@@ -5,13 +5,6 @@ import { auth } from "@/lib/auth";
 // GET all orders (admin) or user's orders
 export async function GET() {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -52,13 +45,6 @@ export async function GET() {
 // POST create order
 export async function POST(request: Request) {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

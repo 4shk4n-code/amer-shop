@@ -34,10 +34,16 @@ function createPrismaClient() {
 }
 
 // Initialize Prisma client - use singleton pattern to prevent multiple instances
-const prismaInstance = globalForPrisma.prisma ?? createPrismaClient()
+let prismaInstance: PrismaClient
 
-if (process.env.NODE_ENV !== 'production') {
+try {
+  prismaInstance = globalForPrisma.prisma ?? createPrismaClient()
+  // Store in global for reuse (both dev and production)
   globalForPrisma.prisma = prismaInstance
+} catch (error) {
+  console.error('❌ Failed to initialize Prisma client:', error)
+  // Re-throw to fail loudly - this indicates a serious configuration issue
+  throw error
 }
 
 // Export prisma client

@@ -10,13 +10,6 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const wishlistItems = await prisma.wishlistItem.findMany({
       where: { userId: (session.user as any).id },
       include: {
@@ -45,13 +38,6 @@ export async function POST(request: Request) {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
     }
 
     const body = await request.json();
