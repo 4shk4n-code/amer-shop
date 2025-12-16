@@ -17,8 +17,10 @@ import {
   Lock,
   ArrowLeft,
   Loader2,
+  Smartphone,
 } from "lucide-react";
 import Link from "next/link";
+import { isPaymentRequestSupported, processPaymentRequest } from "@/lib/payment-request";
 
 export default function CheckoutPage() {
   const { data: session } = useSession();
@@ -26,6 +28,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentMethodAvailable, setPaymentMethodAvailable] = useState(false);
 
   // Form state
   const [shippingInfo, setShippingInfo] = useState({
@@ -62,6 +65,11 @@ export default function CheckoutPage() {
     if (cart.itemCount === 0) {
       router.push("/cart");
     }
+    
+    // Check if Payment Request API is available
+    if (typeof window !== 'undefined') {
+      setPaymentMethodAvailable(isPaymentRequestSupported());
+    }
   }, [cart.itemCount, router]);
 
   const handleInputChange = (
@@ -73,6 +81,119 @@ export default function CheckoutPage() {
       setShippingInfo((prev) => ({ ...prev, [name]: value }));
     } else {
       setBillingInfo((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleGooglePayOrApplePay = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      // Validate required fields
+      if (
+        !shippingInfo.firstName ||
+        !shippingInfo.lastName ||
+        !shippingInfo.email ||
+        !shippingInfo.phone ||
+        !shippingInfo.address ||
+        !shippingInfo.city
+      ) {
+        setError("Please fill in all required fields");
+        setLoading(false);
+        return;
+      }
+
+      // Prepare payment request items
+      const paymentItems = cart.items.map((item) => ({
+        label: item.name,
+        amount: item.price * item.quantity,
+      }));
+
+      // Add shipping and tax
+      if (shipping > 0) {
+        paymentItems.push({
+          label: "Shipping",
+          amount: shipping,
+        });
+      }
+      if (tax > 0) {
+        paymentItems.push({
+          label: "Tax (VAT)",
+          amount: tax,
+        });
+      }
+
+      // Process payment request (Google Pay / Apple Pay)
+      const paymentResponse = await processPaymentRequest({
+        total,
+        currency: "AED",
+        items: paymentItems,
+        shippingInfo,
+      });
+
+      // Extract shipping info from payment response if available
+      let finalShippingInfo = shippingInfo;
+      if (paymentResponse.shippingAddress) {
+        const addr = paymentResponse.shippingAddress;
+        finalShippingInfo = {
+          firstName: addr.recipient?.split(" ")[0] || shippingInfo.firstName,
+          lastName: addr.recipient?.split(" ").slice(1).join(" ") || shippingInfo.lastName,
+          email: paymentResponse.payerEmail || shippingInfo.email,
+          phone: paymentResponse.payerPhone || shippingInfo.phone,
+          address: addr.addressLine?.[0] || shippingInfo.address,
+          city: addr.city || shippingInfo.city,
+          state: addr.region || shippingInfo.state,
+          zipCode: addr.postalCode || shippingInfo.zipCode,
+          country: addr.country || shippingInfo.country,
+        };
+      }
+
+      // Create order and get payment link (still processes through Telr)
+      const response = await fetch("/api/checkout/create-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: cart.items,
+          shippingInfo: finalShippingInfo,
+          billingInfo: billingSameAsShipping ? finalShippingInfo : billingInfo,
+          subtotal,
+          shipping,
+          tax,
+          total,
+          paymentMethod: "google_pay_or_apple_pay",
+          paymentRequestDetails: {
+            methodName: paymentResponse.methodName,
+            payerName: paymentResponse.payerName,
+            payerEmail: paymentResponse.payerEmail,
+            payerPhone: paymentResponse.payerPhone,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        paymentResponse.complete("fail");
+        throw new Error(data.error || "Failed to process payment");
+      }
+
+      // Complete the payment request
+      paymentResponse.complete("success");
+
+      // Redirect to Telr payment page (or success if payment was processed)
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else if (data.orderId) {
+        router.push(`/checkout/success?order_id=${data.orderId}`);
+      } else {
+        router.push("/checkout/success");
+      }
+    } catch (err: any) {
+      console.error("Payment error:", err);
+      setError(err.message || "Payment failed. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -435,6 +556,39 @@ export default function CheckoutPage() {
                   <Lock className="h-4 w-4" />
                   <span>Secure payment powered by Telr</span>
                 </div>
+
+                {/* Google Pay / Apple Pay Buttons */}
+                {paymentMethodAvailable && (
+                  <div className="space-y-3 mb-4">
+                    <Button
+                      type="button"
+                      onClick={handleGooglePayOrApplePay}
+                      className="w-full bg-black hover:bg-gray-800 text-white"
+                      size="lg"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Smartphone className="mr-2 h-4 w-4" />
+                          Pay with Google Pay / Apple Pay
+                        </>
+                      )}
+                    </Button>
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Submit Button */}
                 <Button

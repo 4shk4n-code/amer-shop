@@ -44,6 +44,8 @@ export async function POST(request: Request) {
       shipping,
       tax,
       total,
+      paymentMethod,
+      paymentRequestDetails,
     } = body;
 
     if (!items || items.length === 0) {
@@ -72,9 +74,10 @@ export async function POST(request: Request) {
         shipping,
         status: "pending",
         paymentStatus: "pending",
-        paymentMethod: "telr",
+        paymentMethod: paymentMethod || "telr",
         shippingAddress: JSON.stringify(shippingInfo),
         billingAddress: JSON.stringify(billingInfo),
+        notes: paymentRequestDetails ? JSON.stringify({ paymentRequestDetails }) : undefined,
         items: {
           create: items.map((item: any) => ({
             productId: item.id,
