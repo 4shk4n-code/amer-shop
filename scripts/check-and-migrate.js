@@ -1,4 +1,4 @@
-// Check if DATABASE_URL is valid for SQLite before running migrations
+// Check if DATABASE_URL is valid before running migrations
 const dbUrl = process.env.DATABASE_URL;
 
 if (!dbUrl) {
@@ -6,14 +6,22 @@ if (!dbUrl) {
   process.exit(0);
 }
 
-if (!dbUrl.startsWith('file:')) {
-  console.log('⚠️  DATABASE_URL does not start with "file:" (not SQLite). Skipping migrations.');
-  console.log('   This is expected if using PostgreSQL in production.');
+// Check if DATABASE_URL is for PostgreSQL
+const isPostgreSQL = dbUrl.startsWith('postgres://') || 
+                     dbUrl.startsWith('postgresql://') ||
+                     dbUrl.includes('@') ||
+                     dbUrl.includes('postgres');
+
+if (isPostgreSQL) {
+  console.log('✅ DATABASE_URL is PostgreSQL. Running migrations...');
+} else if (dbUrl.startsWith('file:')) {
+  console.log('✅ DATABASE_URL is SQLite. Running migrations...');
+} else {
+  console.log('⚠️  DATABASE_URL format not recognized. Skipping migrations.');
   process.exit(0);
 }
 
-// DATABASE_URL is valid for SQLite, run migrations
-console.log('✅ DATABASE_URL is valid for SQLite. Running migrations...');
+// Run migrations
 const { execSync } = require('child_process');
 try {
   execSync('prisma migrate deploy', { stdio: 'inherit' });

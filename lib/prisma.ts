@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 
 // Ensure environment variables are loaded
 if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
@@ -14,8 +13,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Create PrismaClient with proper configuration for Prisma 7
-// Prisma 7 requires an adapter for SQLite, but not for PostgreSQL
+// Create PrismaClient for PostgreSQL
 function createPrismaClient() {
   const dbUrl = process.env.DATABASE_URL;
   
@@ -27,32 +25,6 @@ function createPrismaClient() {
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   }
 
-  // Check if DATABASE_URL is for SQLite (starts with "file:")
-  const isSQLite = dbUrl.startsWith('file:');
-  
-  if (isSQLite) {
-    // Extract file path from DATABASE_URL (format: "file:./prisma/dev.db")
-    const dbPath = dbUrl.replace(/^file:/, '');
-    const absoluteDbPath = dbPath.startsWith('./') 
-      ? require('path').join(process.cwd(), dbPath.slice(2))
-      : dbPath;
-
-    // Create SQLite adapter for Prisma 7 (only needed for SQLite)
-    try {
-      const Database = require('better-sqlite3');
-      const sqlite = new Database(absoluteDbPath);
-      const adapter = new PrismaBetterSqlite3(sqlite);
-      options.adapter = adapter;
-    } catch (error) {
-      console.warn('Failed to create SQLite adapter, trying without adapter:', error);
-      // If adapter fails, try without it (might work in some cases)
-    }
-  } else {
-    // For PostgreSQL or other databases, don't use SQLite adapter
-    // Prisma will use the standard connection
-    // No adapter needed for PostgreSQL
-  }
-
   // Check for Prisma Accelerate URL (multiple possible env var names)
   const accelerateUrl = 
     process.env.PRISMA_ACCELERATE_URL || 
@@ -60,10 +32,8 @@ function createPrismaClient() {
     (process.env.DATABASE_URL?.includes('accelerate.prisma-data.net') ? process.env.DATABASE_URL : null)
 
   if (accelerateUrl) {
-    // Use Prisma Accelerate instead of adapter
+    // Use Prisma Accelerate
     options.accelerateUrl = accelerateUrl
-    // Don't use adapter if using Accelerate
-    delete options.adapter
   }
 
   try {
@@ -84,52 +54,21 @@ try {
   if (!dbUrl) {
     if (process.env.NODE_ENV === 'development') {
       console.warn('⚠️  DATABASE_URL not found. Prisma client will not be available.');
-      console.warn('   Make sure .env file exists with: DATABASE_URL="file:./prisma/dev.db"');
+      console.warn('   Make sure .env file exists with: DATABASE_URL="your-postgresql-connection-string"');
     }
   } else {
-    // Check if DATABASE_URL is for PostgreSQL (not SQLite)
-    // Since schema is SQLite, we can't use PostgreSQL DATABASE_URL
-    // Skip initialization to avoid "unknown variant postgres" errors
-    const isPostgreSQL = !dbUrl.startsWith('file:') && (
-      dbUrl.startsWith('postgres://') || 
-      dbUrl.startsWith('postgresql://') ||
-      dbUrl.includes('@') || // PostgreSQL URLs typically have @ symbol
-      dbUrl.includes('postgres') // Check for postgres in URL
-    );
-    
-    if (isPostgreSQL) {
-      // Schema is SQLite but DATABASE_URL is PostgreSQL - skip initialization
-      // This prevents "unknown variant postgres" errors during build
-      if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
-        console.warn('⚠️  DATABASE_URL is PostgreSQL but schema is SQLite. Skipping Prisma initialization.');
-        prismaInstance = null;
-      } else {
-        // In development, still try but catch errors
-        try {
-          prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
-        } catch (error) {
-          console.warn('⚠️  Failed to initialize Prisma with PostgreSQL URL (schema is SQLite). Skipping.');
-          prismaInstance = null;
-        }
-      }
-    } else {
-      // DATABASE_URL is SQLite, proceed normally
-      try {
-        prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
-      } catch (error) {
-        console.error('❌ Failed to create PrismaClient:', error);
-        prismaInstance = null;
-      }
+    // Initialize Prisma client for PostgreSQL
+    try {
+      prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
+    } catch (error) {
+      console.error('❌ Failed to create PrismaClient:', error);
+      prismaInstance = null;
     }
   }
 } catch (error) {
   console.error('❌ Failed to create PrismaClient:', error);
   if (error instanceof Error) {
     console.error('Error message:', error.message);
-    // If error is about postgres variant, skip initialization gracefully
-    if (error.message.includes('unknown variant') || error.message.includes('postgres')) {
-      console.warn('⚠️  Skipping Prisma initialization due to database type mismatch.');
-    }
   }
   prismaInstance = null;
 }
