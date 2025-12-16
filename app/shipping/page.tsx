@@ -1,4 +1,26 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
+
+export const metadata: Metadata = {
+  title: "Shipping & Delivery Policy",
+  description: "Learn about AMERSHOP!'s shipping and delivery options. Free shipping available, express delivery, and order tracking. Fast and reliable delivery across UAE.",
+  keywords: ["shipping", "delivery", "free shipping", "express delivery", "order tracking", "AMERSHOP!"],
+  openGraph: {
+    title: "Shipping & Delivery Policy | AMERSHOP!",
+    description: "Learn about AMERSHOP!'s shipping and delivery options. Fast and reliable delivery across UAE.",
+    url: `${baseUrl}/shipping`,
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/shipping`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function ShippingPage() {
   return (

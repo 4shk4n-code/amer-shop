@@ -69,7 +69,7 @@ export default function ProductCard({
           )}
           <PlaceholderImage
             src={image}
-            alt={name}
+            alt={name || "Product image"}
             fill
             className="object-cover group-hover:scale-110 transition-transform duration-300"
             placeholderText={name}
@@ -79,9 +79,9 @@ export default function ProductCard({
         </div>
         <div className="p-4 flex flex-col flex-1">
           {category && (
-            <p className="text-xs text-muted-foreground uppercase mb-1">{category}</p>
+            <p className="text-xs text-muted-foreground uppercase mb-1" aria-label={`Category: ${category}`}>{category}</p>
           )}
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2 min-h-[3.5rem]">{name}</h3>
+          <h2 className="font-semibold text-lg mb-2 line-clamp-2 min-h-[3.5rem]">{name}</h2>
           {description && (
             <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-shrink-0">{description}</p>
           )}

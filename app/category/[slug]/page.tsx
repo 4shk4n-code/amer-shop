@@ -1,6 +1,9 @@
 import dynamic from "next/dynamic";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
 
 // Loading skeleton component
 function CategorySkeleton() {
@@ -72,17 +75,115 @@ interface CategoryPageProps {
   };
 }
 
-export default function CategoryPage({ params }: CategoryPageProps) {
+// Generate metadata for category pages
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  // Try to fetch category from database for better metadata
+  let categoryName = params.slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+  let categoryDescription = `Browse ${categoryName} products at AMERSHOP!. Quality products at competitive prices with fast shipping. Shop now!`;
+
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    if (prisma) {
+      const category = await prisma.category.findUnique({
+        where: { slug: params.slug },
+      });
+      if (category) {
+        categoryName = category.name;
+        categoryDescription = category.description || categoryDescription;
+      }
+    }
+  } catch (error) {
+    // Fallback to slug-based name if database query fails
+    console.warn('Failed to fetch category for metadata:', error);
+  }
+
+  return {
+    title: `${categoryName} - AMERSHOP!`,
+    description: categoryDescription,
+    keywords: [categoryName.toLowerCase(), "products", "online shopping", "AMERSHOP!", "ecommerce"],
+    openGraph: {
+      title: `${categoryName} - AMERSHOP!`,
+      description: categoryDescription,
+      url: `${baseUrl}/category/${params.slug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${categoryName} - AMERSHOP!`,
+      description: categoryDescription,
+    },
+    alternates: {
+      canonical: `${baseUrl}/category/${params.slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
+
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const CategoryComponent = categoryMap[params.slug];
 
   if (!CategoryComponent) {
     notFound();
   }
 
+  // Fetch category from database for breadcrumb
+  let categoryName = params.slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    if (prisma) {
+      const category = await prisma.category.findUnique({
+        where: { slug: params.slug },
+      });
+      if (category) {
+        categoryName = category.name;
+      }
+    }
+  } catch (error) {
+    // Fallback to slug-based name if database query fails
+    console.warn('Failed to fetch category for breadcrumb:', error);
+  }
+
+  // Breadcrumb Schema for Category
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": categoryName,
+        "item": `${baseUrl}/category/${params.slug}`,
+      },
+    ],
+  };
+
   return (
-    <main className="min-h-screen">
-      <Header />
-      <CategoryComponent />
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      
+      <main className="min-h-screen">
+        <Header />
+        <CategoryComponent />
       <footer className="border-t mt-16">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-muted-foreground">
@@ -90,7 +191,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           </div>
         </div>
       </footer>
-    </main>
+      </main>
+    </>
   );
 }
 

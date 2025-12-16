@@ -1,4 +1,26 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
+
+export const metadata: Metadata = {
+  title: "Refund & Return Policy",
+  description: "Read AMERSHOP!'s Refund & Return Policy. Learn about our 14-day return policy, refund process, and return eligibility. Easy returns and fast refunds.",
+  keywords: ["refund policy", "return policy", "returns", "refunds", "AMERSHOP!"],
+  openGraph: {
+    title: "Refund & Return Policy | AMERSHOP!",
+    description: "Read AMERSHOP!'s Refund & Return Policy. Easy returns and fast refunds within 14 days.",
+    url: `${baseUrl}/refund`,
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/refund`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function RefundPage() {
   return (

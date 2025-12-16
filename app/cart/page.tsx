@@ -242,12 +242,11 @@ export default function CartPage() {
                   <Button
                     className="w-full mb-4"
                     size="lg"
-                    onClick={() => {
-                      // TODO: Navigate to checkout page
-                      alert("Checkout functionality coming soon!");
-                    }}
+                    asChild
                   >
-                    Proceed to Checkout
+                    <Link href="/checkout">
+                      Proceed to Checkout
+                    </Link>
                   </Button>
 
                   {/* Continue Shopping */}

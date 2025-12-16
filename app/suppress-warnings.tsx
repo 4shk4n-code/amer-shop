@@ -18,6 +18,10 @@ export default function SuppressWarnings() {
       if (message.includes('DialogContent') || message.includes('DialogTitle') || message.includes('Description')) {
         return;
       }
+      // Suppress Next.js Image aspect ratio warnings (we handle with style prop)
+      if (message.includes('Image with src') && message.includes('has either width or height modified')) {
+        return;
+      }
       originalWarn.apply(console, args);
     };
 

@@ -57,6 +57,7 @@ export default function Header() {
               width={120}
               height={40}
               className="h-10 w-auto"
+              style={{ width: 'auto', height: '40px' }}
               priority
               unoptimized
             />
@@ -218,8 +219,8 @@ export default function Header() {
         </div>
 
         {/* Navigation Menu - Centered */}
-        <nav className="hidden md:flex items-center justify-center h-14 border-t">
-          <ul className="flex items-center space-x-8">
+        <nav className="hidden md:flex items-center justify-center h-14 border-t" aria-label="Main navigation">
+          <ul className="flex items-center space-x-8" role="list">
             <li>
               <Link
                 href="/refurbished"
@@ -309,8 +310,8 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <nav className="md:hidden border-t py-4">
-            <ul className="flex flex-col space-y-2">
+          <nav className="md:hidden border-t py-4" aria-label="Mobile navigation">
+            <ul className="flex flex-col space-y-2" role="list">
               <li>
                 <Link
                   href="/refurbished"

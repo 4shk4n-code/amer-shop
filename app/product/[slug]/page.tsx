@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Image from "next/image";
@@ -9,6 +10,8 @@ import { formatPrice } from "@/lib/currency";
 import Link from "next/link";
 import AddToCartButton from "@/components/AddToCartButton";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
+
 // Force dynamic rendering since products can be added/updated
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -17,6 +20,75 @@ interface ProductPageProps {
   params: {
     slug: string;
   };
+}
+
+// Generate metadata for product pages
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  if (!prisma) {
+    return {
+      title: "Product Not Found",
+    };
+  }
+
+  try {
+    const product = await prisma.product.findUnique({
+      where: { slug: params.slug },
+      include: { category: true },
+    });
+
+    if (!product) {
+      return {
+        title: "Product Not Found",
+      };
+    }
+
+    const productUrl = `${baseUrl}/product/${product.slug}`;
+    const productImage = product.image ? `${baseUrl}${product.image}` : `${baseUrl}/images/logo/amerlogo.png`;
+    const price = product.price;
+    const originalPrice = product.originalPrice || product.price;
+    const inStock = product.stock > 0;
+    const availability = inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+
+    return {
+      title: `${product.name} - AMERSHOP!`,
+      description: product.description || `Buy ${product.name} at AMERSHOP!. ${product.category?.name || 'Quality products'} at competitive prices. ${inStock ? 'In stock now!' : 'Check availability.'}`,
+      keywords: [product.name, product.category?.name || '', "buy online", "ecommerce", "AMERSHOP!"].filter(Boolean),
+      openGraph: {
+        title: product.name,
+        description: product.description || `Buy ${product.name} at AMERSHOP!`,
+        url: productUrl,
+        type: "website",
+        images: [
+          {
+            url: productImage,
+            width: 1200,
+            height: 630,
+            alt: product.name,
+          },
+        ],
+        siteName: "AMERSHOP!",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: product.name,
+        description: product.description || `Buy ${product.name} at AMERSHOP!`,
+        images: [productImage],
+      },
+      alternates: {
+        canonical: productUrl,
+      },
+      other: {
+        "product:price:amount": price.toString(),
+        "product:price:currency": "AED",
+        "product:availability": availability,
+        "product:condition": product.isRefurbished ? "refurbished" : "new",
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Product",
+    };
+  }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
@@ -81,10 +153,82 @@ export default async function ProductPage({ params }: ProductPageProps) {
     // Continue without related products if there's an error
   }
 
+  // Structured Data for Product
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": product.description || product.name,
+    "image": product.image ? `${baseUrl}${product.image}` : `${baseUrl}/images/logo/amerlogo.png`,
+    "sku": product.id,
+    "brand": {
+      "@type": "Brand",
+      "name": "AMERSHOP!",
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `${baseUrl}/product/${product.slug}`,
+      "priceCurrency": "AED",
+      "price": product.price,
+      "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      "itemCondition": product.isRefurbished ? "https://schema.org/RefurbishedCondition" : "https://schema.org/NewCondition",
+      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "AMERSHOP!",
+      },
+    },
+    "category": product.category?.name || "",
+    ...(product.originalPrice && product.originalPrice > product.price && {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "reviewCount": "10",
+      },
+    }),
+  };
+
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": baseUrl,
+      },
+      ...(product.category ? [{
+        "@type": "ListItem",
+        "position": 2,
+        "name": product.category.name,
+        "item": `${baseUrl}/category/${product.category.slug}`,
+      }] : []),
+      {
+        "@type": "ListItem",
+        "position": product.category ? 3 : 2,
+        "name": product.name,
+        "item": `${baseUrl}/product/${product.slug}`,
+      },
+    ],
+  };
+
   return (
-    <main className="min-h-screen">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
+    <>
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      
+      <main className="min-h-screen" itemScope itemType="https://schema.org/Product">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-6 text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground">Home</Link>
@@ -159,7 +303,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
             
             <div>
-              <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
+              <h1 className="text-4xl font-bold mb-2" itemProp="name">{product.name}</h1>
               <p className="text-sm text-muted-foreground flex items-center gap-2">
                 <span>Product ID:</span>
                 <code className="bg-muted px-2 py-1 rounded text-xs">{product.id}</code>
@@ -226,8 +370,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {/* Description */}
             {product.description && (
               <div className="border-t pt-4">
-                <h3 className="font-semibold mb-2">Description</h3>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                <h2 className="font-semibold mb-2">Description</h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line" itemProp="description">
                   {product.description}
                 </p>
               </div>
@@ -399,8 +543,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         )}
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }
 

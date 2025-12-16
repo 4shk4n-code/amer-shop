@@ -1,4 +1,26 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Read AMERSHOP!'s Privacy Policy to understand how we collect, use, and protect your personal information. Your privacy is important to us.",
+  keywords: ["privacy policy", "data protection", "AMERSHOP!", "online privacy"],
+  openGraph: {
+    title: "Privacy Policy | AMERSHOP!",
+    description: "Read AMERSHOP!'s Privacy Policy to understand how we collect, use, and protect your personal information.",
+    url: `${baseUrl}/privacy`,
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/privacy`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function PrivacyPage() {
   return (

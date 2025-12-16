@@ -1,4 +1,26 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amertrading.shop';
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description: "Read AMERSHOP!'s Terms & Conditions. Understand the terms of use, product information, and limitations when shopping at AMERSHOP!.",
+  keywords: ["terms and conditions", "terms of service", "AMERSHOP!", "legal"],
+  openGraph: {
+    title: "Terms & Conditions | AMERSHOP!",
+    description: "Read AMERSHOP!'s Terms & Conditions to understand the terms of use when shopping at AMERSHOP!.",
+    url: `${baseUrl}/terms`,
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/terms`,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function TermsPage() {
   return (
