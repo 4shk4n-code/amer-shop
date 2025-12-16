@@ -1,15 +1,21 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { XCircle, ArrowLeft, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 function CheckoutCancelContent() {
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get("order_id");
+  const [orderId, setOrderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Read from URL directly to avoid hydration issues
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setOrderId(params.get("order_id"));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -61,17 +67,6 @@ function CheckoutCancelContent() {
 }
 
 export default function CheckoutCancelPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    }>
-      <CheckoutCancelContent />
-    </Suspense>
-  );
+  return <CheckoutCancelContent />;
 }
 
