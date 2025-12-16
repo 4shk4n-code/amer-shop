@@ -22,17 +22,10 @@ export interface PaymentRequestOptions {
   };
 }
 
-export interface PaymentMethodData {
-  supportedMethods: string[];
-  data?: {
-    environment?: string;
-    apiVersion?: number;
-    apiVersionMinor?: number;
-    merchantId?: string;
-    merchantName?: string;
-    allowedPaymentMethods?: any[];
-  };
-}
+// Payment Method Data for Payment Request API
+// The PaymentRequest API accepts PaymentMethodData which has supportedMethods as string
+// We'll use 'any' type to match the browser's Payment Request API types
+export type PaymentMethodData = any;
 
 /**
  * Check if Payment Request API is available
@@ -123,10 +116,8 @@ export async function createPaymentRequest(
         environment: process.env.NODE_ENV === 'production' ? 'PRODUCTION' : 'TEST',
         apiVersion: 2,
         apiVersionMinor: 0,
-        merchantInfo: {
-          merchantName: 'AMERSHOP!',
-          merchantId: process.env.NEXT_PUBLIC_GOOGLE_MERCHANT_ID || '',
-        },
+        merchantName: 'AMERSHOP!',
+        merchantId: process.env.NEXT_PUBLIC_GOOGLE_MERCHANT_ID || '',
         allowedPaymentMethods: [
           {
             type: 'CARD',
