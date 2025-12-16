@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +8,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CreditCard, ExternalLink, Copy, Check } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://amertrading.shop";
+
 export default function DemoPaymentPage() {
   const [amount, setAmount] = useState("100.00");
   const [orderId, setOrderId] = useState("");
   const [paymentLink, setPaymentLink] = useState("");
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [baseUrl, setBaseUrl] = useState(BASE_URL);
+  
+  // Set base URL on client side to avoid hydration mismatch
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
 
   const generatePaymentLink = async () => {
     setLoading(true);
@@ -24,7 +34,6 @@ export default function DemoPaymentPage() {
       const demoOrderId = orderId || `DEMO-${Date.now()}`;
       
       // This is a demo - in production, this would call your API
-      const baseUrl = window.location.origin;
       const checkoutUrl = `${baseUrl}/checkout?demo=true&amount=${amount}&order=${demoOrderId}`;
       
       setPaymentLink(checkoutUrl);
@@ -183,9 +192,7 @@ export default function DemoPaymentPage() {
                 <div>
                   <h3 className="font-semibold mb-2">Webhook URL:</h3>
                   <code className="block p-2 bg-muted rounded text-sm break-all">
-                    {typeof window !== 'undefined' 
-                      ? `${window.location.origin}/api/checkout/webhook`
-                      : 'https://yourdomain.com/api/checkout/webhook'}
+                    {baseUrl}/api/checkout/webhook
                   </code>
                 </div>
                 <div>
@@ -194,25 +201,19 @@ export default function DemoPaymentPage() {
                     <li>
                       <strong>Success:</strong>{" "}
                       <code className="bg-muted px-1 rounded">
-                        {typeof window !== 'undefined' 
-                          ? `${window.location.origin}/checkout/success`
-                          : 'https://yourdomain.com/checkout/success'}
+                        {baseUrl}/checkout/success
                       </code>
                     </li>
                     <li>
                       <strong>Cancel:</strong>{" "}
                       <code className="bg-muted px-1 rounded">
-                        {typeof window !== 'undefined' 
-                          ? `${window.location.origin}/checkout/cancel`
-                          : 'https://yourdomain.com/checkout/cancel'}
+                        {baseUrl}/checkout/cancel
                       </code>
                     </li>
                     <li>
                       <strong>Declined:</strong>{" "}
                       <code className="bg-muted px-1 rounded">
-                        {typeof window !== 'undefined' 
-                          ? `${window.location.origin}/checkout/declined`
-                          : 'https://yourdomain.com/checkout/declined'}
+                        {baseUrl}/checkout/declined
                       </code>
                     </li>
                   </ul>
