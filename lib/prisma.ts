@@ -15,12 +15,6 @@ const globalForPrisma = globalThis as unknown as {
 
 // Create PrismaClient for PostgreSQL
 function createPrismaClient() {
-  const dbUrl = process.env.DATABASE_URL;
-  
-  if (!dbUrl) {
-    throw new Error('DATABASE_URL is required');
-  }
-
   const options: any = {
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   }
@@ -36,50 +30,19 @@ function createPrismaClient() {
     options.accelerateUrl = accelerateUrl
   }
 
-  try {
-    return new PrismaClient(options)
-  } catch (error) {
-    console.error('Error creating PrismaClient:', error);
-    throw error;
-  }
+  return new PrismaClient(options)
 }
 
-// Create prisma client with error handling
-let prismaInstance: PrismaClient | null = null;
+// Initialize Prisma client - use singleton pattern to prevent multiple instances
+const prismaInstance = globalForPrisma.prisma ?? createPrismaClient()
 
-// Initialize Prisma client
-try {
-  const dbUrl = process.env.DATABASE_URL;
-  
-  if (!dbUrl) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️  DATABASE_URL not found. Prisma client will not be available.');
-      console.warn('   Make sure .env file exists with: DATABASE_URL="your-postgresql-connection-string"');
-    }
-  } else {
-    // Initialize Prisma client for PostgreSQL
-    try {
-      prismaInstance = globalForPrisma.prisma ?? createPrismaClient();
-    } catch (error) {
-      console.error('❌ Failed to create PrismaClient:', error);
-      prismaInstance = null;
-    }
-  }
-} catch (error) {
-  console.error('❌ Failed to create PrismaClient:', error);
-  if (error instanceof Error) {
-    console.error('Error message:', error.message);
-  }
-  prismaInstance = null;
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prismaInstance
 }
 
-// Export prisma - may be null if initialization failed or DATABASE_URL is missing
+// Export prisma client
 export const prisma = prismaInstance
 
 // Export type for use in other files
 export type { PrismaClient }
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
-}
 
