@@ -51,6 +51,15 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
+  async redirects() {
+    return [
+      {
+        source: '/TELR_SETUP.md',
+        destination: '/telr-setup',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

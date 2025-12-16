@@ -252,7 +252,7 @@ export default function DemoPaymentPage() {
               </a>
             </Button>
             <Button asChild variant="outline">
-              <a href="/TELR_SETUP.md" target="_blank">
+              <a href="/telr-setup" target="_blank">
                 View Setup Documentation
               </a>
             </Button>
