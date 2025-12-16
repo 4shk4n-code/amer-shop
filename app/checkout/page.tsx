@@ -457,7 +457,7 @@ export default function CheckoutPage() {
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  You will be redirected to Telr's secure payment page
+                  You will be redirected to Telr&apos;s secure payment page
                 </p>
               </div>
             </div>
