@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
 
 interface WishlistButtonProps {
   productId: string;
@@ -21,6 +22,7 @@ export default function WishlistButton({
 }: WishlistButtonProps) {
   const { data: session } = useSession();
   const router = useRouter();
+  const { showToast } = useToast();
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -72,10 +74,11 @@ export default function WishlistButton({
 
         if (response.ok) {
           setIsInWishlist(false);
+          showToast("Removed from wishlist", "success", 3000);
         } else {
           const errorData = await response.json().catch(() => ({}));
           console.error("Failed to remove from wishlist:", response.status, errorData);
-          alert("Failed to remove from wishlist. Please try again.");
+          showToast("Failed to remove from wishlist. Please try again.", "error", 4000);
         }
       } else {
         // Add to wishlist
@@ -89,15 +92,16 @@ export default function WishlistButton({
 
         if (response.ok) {
           setIsInWishlist(true);
+          showToast("Added to wishlist!", "success", 3000);
         } else {
           const errorData = await response.json().catch(() => ({}));
           console.error("Failed to add to wishlist:", response.status, errorData);
-          alert(`Failed to add to wishlist: ${errorData.error || "Unknown error"}`);
+          showToast(`Failed to add to wishlist: ${errorData.error || "Unknown error"}`, "error", 4000);
         }
       }
     } catch (error) {
       console.error("Error toggling wishlist:", error);
-      alert("An error occurred. Please try again.");
+      showToast("An error occurred. Please try again.", "error", 4000);
     } finally {
       setLoading(false);
     }
