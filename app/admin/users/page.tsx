@@ -105,7 +105,8 @@ export default function UsersPage() {
               {filteredUsers.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-t border-border hover:bg-muted/50 transition-colors"
+                  className="border-t border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => window.location.href = `/admin/users/${user.id}`}
                 >
                   <td className="px-4 py-3 text-sm">
                     {user.name || "N/A"}
