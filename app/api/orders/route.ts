@@ -76,17 +76,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate totals
-    const subtotal = cartItems.reduce(
-      (sum: number, item: any) => sum + item.product.price * item.quantity,
-      0
-    );
-    const tax = cartItems.reduce(
-      (sum: number, item: any) => sum + (item.product.tax || 0) * item.quantity,
-      0
-    );
+    // Calculate totals efficiently in a single pass
+    let subtotal = 0;
+    let tax = 0;
+    
+    for (const item of cartItems) {
+      const itemSubtotal = item.product.price * item.quantity;
+      const itemTax = (item.product.tax || 0) * item.quantity;
+      subtotal += itemSubtotal;
+      tax += itemTax;
+    }
+    
+    // Round to 2 decimal places
+    subtotal = Math.round(subtotal * 100) / 100;
+    tax = Math.round(tax * 100) / 100;
     const shipping = 0; // You can add shipping calculation logic
-    const total = subtotal + tax + shipping;
+    const total = Math.round((subtotal + tax + shipping) * 100) / 100;
 
     // Create order
     const order = await prisma.order.create({

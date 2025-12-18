@@ -127,7 +127,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const images = product.images ? JSON.parse(product.images) : [];
+  let images: string[] = [];
+  if (product.images) {
+    try {
+      images = JSON.parse(product.images);
+      if (!Array.isArray(images)) {
+        images = [];
+      }
+    } catch (error) {
+      console.error("Error parsing product images:", error);
+      images = [];
+    }
+  }
   const allImages = product.image ? [product.image, ...images] : images;
   
   // Calculate discount percentage

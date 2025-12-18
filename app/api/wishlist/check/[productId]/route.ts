@@ -13,11 +13,11 @@ export async function GET(
       return NextResponse.json({ inWishlist: false });
     }
 
-    if (!prisma) {
+    const { productId } = params;
+
+    if (!productId || typeof productId !== 'string') {
       return NextResponse.json({ inWishlist: false });
     }
-
-    const { productId } = params;
 
     const wishlistItem = await prisma.wishlistItem.findUnique({
       where: {

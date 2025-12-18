@@ -10,13 +10,6 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: (session.user as any).id },
       select: {
@@ -51,15 +44,23 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
+    const body = await request.json();
+    const { name, phone } = body;
+
+    // Input validation
+    if (name !== undefined && (typeof name !== 'string' || name.trim().length === 0)) {
       return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
+        { error: "Name must be a non-empty string" },
+        { status: 400 }
       );
     }
 
-    const body = await request.json();
-    const { name, phone } = body;
+    if (phone !== undefined && typeof phone !== 'string') {
+      return NextResponse.json(
+        { error: "Phone must be a string" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.update({
       where: { id: (session.user as any).id },

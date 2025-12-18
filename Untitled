@@ -1,0 +1,61 @@
+18:21:27.175 Running build in Washington, D.C., USA (East) – iad1
+18:21:27.179 Build machine configuration: 2 cores, 8 GB
+18:21:27.731 Cloning github.com/4shk4n-code/amer-shop (Branch: main, Commit: 8da99fe)
+18:21:34.261 Cloning completed: 6.529s
+18:21:34.484 Restored build cache from previous deployment (FS7TiMchXHMgJ881gu9W7Zu5AYN2)
+18:21:35.446 Running "vercel build"
+18:21:35.953 Vercel CLI 50.0.1
+18:21:36.384 Running "install" command: `npm install`...
+18:21:46.422 
+18:21:46.422 > kaz-shop@0.1.0 postinstall
+18:21:46.422 > prisma generate && node scripts/fix-prisma.js
+18:21:46.422 
+18:21:47.743 Loaded Prisma config from prisma.config.ts.
+18:21:47.744 
+18:21:47.842 Prisma schema loaded from prisma/schema.prisma
+18:21:48.166 
+18:21:48.167 ✔ Generated Prisma Client (7.1.0) to ./node_modules/.prisma/client in 159ms
+18:21:48.167 
+18:21:48.212 📁 Files in node_modules/.prisma/client: browser.ts, client.ts, commonInputTypes.ts, enums.ts, internal, models, models.ts
+18:21:48.213 ✅ Created node_modules/.prisma/client/default.js
+18:21:48.223 
+18:21:48.223 up to date, audited 588 packages in 12s
+18:21:48.226 
+18:21:48.226 177 packages are looking for funding
+18:21:48.226   run `npm fund` for details
+18:21:48.310 
+18:21:48.310 4 high severity vulnerabilities
+18:21:48.311 
+18:21:48.311 To address issues that do not require attention, run:
+18:21:48.311   npm audit fix
+18:21:48.311 
+18:21:48.311 To address all issues (including breaking changes), run:
+18:21:48.312   npm audit fix --force
+18:21:48.312 
+18:21:48.312 Run `npm audit` for details.
+18:21:48.361 Detected Next.js version: 14.2.33
+18:21:48.362 Running "prisma generate && node scripts/fix-prisma.js && node scripts/check-and-migrate.js && next build"
+18:21:49.400 Loaded Prisma config from prisma.config.ts.
+18:21:49.402 
+18:21:49.438 Prisma schema loaded from prisma/schema.prisma
+18:21:49.702 
+18:21:49.704 ✔ Generated Prisma Client (7.1.0) to ./node_modules/.prisma/client in 142ms
+18:21:49.704 
+18:21:49.777 📁 Files in node_modules/.prisma/client: browser.ts, client.ts, commonInputTypes.ts, enums.ts, internal, models, models.ts
+18:21:49.786 ✅ Created node_modules/.prisma/client/default.js
+18:21:49.871 ✅ DATABASE_URL is PostgreSQL. Running migrations...
+18:21:50.984 Loaded Prisma config from prisma.config.ts.
+18:21:50.984 
+18:21:51.023 Prisma schema loaded from prisma/schema.prisma
+18:21:51.027 Datasource "db": PostgreSQL database "postgres", schema "public" at "db.prisma.io:5432"
+18:21:52.399 
+18:21:52.400 2 migrations found in prisma/migrations
+18:21:52.400 
+18:21:53.807 Error: P3009
+18:21:53.808 
+18:21:53.808 migrate found failed migrations in the target database, new migrations will not be applied. Read more about how to resolve migration issues in a production database: https://pris.ly/d/migrate-resolve
+18:21:53.808 The `20251213085201_init` migration started at 2025-12-16 14:19:08.634924 UTC failed
+18:21:53.808 
+18:21:53.808 
+18:21:53.818 ❌ Migration failed: Command failed: prisma migrate deploy
+18:21:53.829 Error: Command "prisma generate && node scripts/fix-prisma.js && node scripts/check-and-migrate.js && next build" exited with 1

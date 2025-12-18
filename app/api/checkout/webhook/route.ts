@@ -21,13 +21,6 @@ function verifyTelrSignature(params: Record<string, string>, signature: string):
 
 export async function POST(request: Request) {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     // Telr sends webhook data as form data or query params
     const formData = await request.formData();
     const webhookData: Record<string, string> = {};
@@ -122,7 +115,13 @@ export async function POST(request: Request) {
         paymentStatus,
         status: orderStatus,
         notes: JSON.stringify({
-          ...(order.notes ? JSON.parse(order.notes) : {}),
+          ...(order.notes ? (() => {
+            try {
+              return JSON.parse(order.notes);
+            } catch {
+              return {};
+            }
+          })() : {}),
           telrTransactionRef: transactionRef,
           telrAuthCode: authCode,
           telrMessage: message,

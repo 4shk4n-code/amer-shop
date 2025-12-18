@@ -80,18 +80,16 @@ providers.push(
   })
 );
 
-// Temporarily disable PrismaAdapter to get the site working
-// We'll re-enable it once Prisma connection is fixed
+// Initialize PrismaAdapter for database sessions
 let adapter: any = undefined;
-// TODO: Re-enable adapter once Prisma connection is working
-// try {
-//   if (process.env.DATABASE_URL) {
-//     adapter = PrismaAdapter(prisma) as any;
-//   }
-// } catch (error) {
-//   console.warn('PrismaAdapter initialization failed, using JWT-only mode:', error);
-//   adapter = undefined;
-// }
+try {
+  if (process.env.DATABASE_URL && prisma) {
+    adapter = PrismaAdapter(prisma) as any;
+  }
+} catch (error) {
+  console.warn('PrismaAdapter initialization failed, using JWT-only mode:', error);
+  adapter = undefined;
+}
 
 export const authConfig = {
   adapter: adapter,

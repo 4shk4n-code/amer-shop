@@ -51,6 +51,49 @@ export async function POST(request: Request) {
       isDefault,
     } = body;
 
+    // Input validation
+    if (!firstName || typeof firstName !== 'string' || firstName.trim().length === 0) {
+      return NextResponse.json(
+        { error: "First name is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!lastName || typeof lastName !== 'string' || lastName.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Last name is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      return NextResponse.json(
+        { error: "Valid email is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Phone number is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!address || typeof address !== 'string' || address.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Address is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!city || typeof city !== 'string' || city.trim().length === 0) {
+      return NextResponse.json(
+        { error: "City is required" },
+        { status: 400 }
+      );
+    }
+
     // If this is set as default, unset other defaults of the same type
     if (isDefault) {
       await prisma.address.updateMany({

@@ -13,14 +13,14 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
+    const { id } = params;
+
+    if (!id || typeof id !== 'string') {
       return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
+        { error: "Invalid address ID" },
+        { status: 400 }
       );
     }
-
-    const { id } = params;
     const body = await request.json();
     const {
       type,
@@ -35,6 +35,28 @@ export async function PATCH(
       country,
       isDefault,
     } = body;
+
+    // Input validation
+    if (firstName && (typeof firstName !== 'string' || firstName.trim().length === 0)) {
+      return NextResponse.json(
+        { error: "First name must be a non-empty string" },
+        { status: 400 }
+      );
+    }
+
+    if (lastName && (typeof lastName !== 'string' || lastName.trim().length === 0)) {
+      return NextResponse.json(
+        { error: "Last name must be a non-empty string" },
+        { status: 400 }
+      );
+    }
+
+    if (email && (typeof email !== 'string' || !email.includes('@'))) {
+      return NextResponse.json(
+        { error: "Valid email is required" },
+        { status: 400 }
+      );
+    }
 
     // Verify address belongs to user
     const existingAddress = await prisma.address.findUnique({
@@ -98,14 +120,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
+    const { id } = params;
+
+    if (!id || typeof id !== 'string') {
       return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
+        { error: "Invalid address ID" },
+        { status: 400 }
       );
     }
-
-    const { id } = params;
 
     // Verify address belongs to user
     const existingAddress = await prisma.address.findUnique({

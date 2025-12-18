@@ -5,13 +5,6 @@ import { auth } from "@/lib/auth";
 // GET user's cart
 export async function GET() {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -30,15 +23,20 @@ export async function GET() {
       },
     });
 
-    const total = cartItems.reduce(
-      (sum: number, item: any) => sum + item.product.price * item.quantity,
-      0
-    );
+    // Calculate totals efficiently in a single pass
+    let total = 0;
+    let itemCount = 0;
+    
+    for (const item of cartItems) {
+      const itemTotal = item.product.price * item.quantity;
+      total += itemTotal;
+      itemCount += item.quantity;
+    }
 
     return NextResponse.json({
       items: cartItems,
-      total,
-      itemCount: cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0),
+      total: Math.round(total * 100) / 100, // Round to 2 decimal places
+      itemCount,
     });
   } catch (error) {
     console.error("Error fetching cart:", error);
@@ -52,13 +50,6 @@ export async function GET() {
 // POST add item to cart
 export async function POST(request: Request) {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -66,6 +57,36 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const { productId, quantity = 1 } = body;
+
+    // Input validation
+    if (!productId || typeof productId !== 'string') {
+      return NextResponse.json(
+        { error: "Product ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const quantityNum = Math.max(1, Math.min(999, parseInt(String(quantity)) || 1));
+
+    // Verify product exists and is active
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product || !product.isActive) {
+      return NextResponse.json(
+        { error: "Product not found or unavailable" },
+        { status: 404 }
+      );
+    }
+
+    // Check stock availability
+    if (product.stock < quantityNum) {
+      return NextResponse.json(
+        { error: `Only ${product.stock} items available in stock` },
+        { status: 400 }
+      );
+    }
 
     const cartItem = await prisma.cartItem.upsert({
       where: {
@@ -76,13 +97,13 @@ export async function POST(request: Request) {
       },
       update: {
         quantity: {
-          increment: quantity,
+          increment: quantityNum,
         },
       },
       create: {
         userId: (session.user as any).id,
         productId,
-        quantity,
+        quantity: quantityNum,
       },
       include: {
         product: true,
@@ -102,13 +123,6 @@ export async function POST(request: Request) {
 // DELETE remove item from cart
 export async function DELETE(request: Request) {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
-      );
-    }
-
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

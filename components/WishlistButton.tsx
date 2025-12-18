@@ -25,13 +25,27 @@ export default function WishlistButton({
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
 
+  const checkWishlistStatus = async () => {
+    try {
+      const response = await fetch(`/api/wishlist/check/${productId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setIsInWishlist(data.inWishlist);
+      }
+    } catch (error) {
+      console.error("Error checking wishlist:", error);
+    } finally {
+      setChecking(false);
+    }
+  };
+
   useEffect(() => {
     if (session?.user) {
       checkWishlistStatus();
     } else {
       setChecking(false);
     }
-  }, [session, productId]);
+  }, [session?.user, productId]);
 
   const checkWishlistStatus = async () => {
     try {

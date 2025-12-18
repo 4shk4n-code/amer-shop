@@ -13,14 +13,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!prisma) {
+    const { productId } = params;
+
+    if (!productId || typeof productId !== 'string') {
       return NextResponse.json(
-        { error: "Database not available" },
-        { status: 503 }
+        { error: "Invalid product ID" },
+        { status: 400 }
       );
     }
-
-    const { productId } = params;
 
     const wishlistItem = await prisma.wishlistItem.findUnique({
       where: {

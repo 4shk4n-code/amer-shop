@@ -4,15 +4,6 @@ import { prisma } from "@/lib/prisma";
 // Route to update product images
 export async function GET() {
   try {
-    if (!prisma) {
-      return NextResponse.json(
-        { 
-          error: "Database not available. Please check DATABASE_URL environment variable.",
-        },
-        { status: 500 }
-      );
-    }
-
     const results = [];
 
     // Update Yoga Mat
