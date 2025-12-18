@@ -13,6 +13,12 @@ export async function GET(
       return NextResponse.json({ inWishlist: false });
     }
 
+    const userId = (session.user as any).id;
+    if (!userId) {
+      console.error("User ID not found in session:", session.user);
+      return NextResponse.json({ inWishlist: false });
+    }
+
     const { productId } = params;
 
     if (!productId || typeof productId !== 'string') {
@@ -22,7 +28,7 @@ export async function GET(
     const wishlistItem = await prisma.wishlistItem.findUnique({
       where: {
         userId_productId: {
-          userId: (session.user as any).id,
+          userId,
           productId,
         },
       },

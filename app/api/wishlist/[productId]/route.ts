@@ -13,6 +13,15 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = (session.user as any).id;
+    if (!userId) {
+      console.error("User ID not found in session:", session.user);
+      return NextResponse.json(
+        { error: "User ID not found in session" },
+        { status: 401 }
+      );
+    }
+
     const { productId } = params;
 
     if (!productId || typeof productId !== 'string') {
@@ -25,7 +34,7 @@ export async function DELETE(
     const wishlistItem = await prisma.wishlistItem.findUnique({
       where: {
         userId_productId: {
-          userId: (session.user as any).id,
+          userId,
           productId,
         },
       },
@@ -41,7 +50,7 @@ export async function DELETE(
     await prisma.wishlistItem.delete({
       where: {
         userId_productId: {
-          userId: (session.user as any).id,
+          userId,
           productId,
         },
       },
