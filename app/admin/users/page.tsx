@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, Eye } from "lucide-react";
 
 interface User {
   id: string;
@@ -17,6 +20,7 @@ interface User {
 }
 
 export default function UsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,19 +103,27 @@ export default function UsersPage() {
                 <th className="px-4 py-3 text-left text-sm font-medium">Role</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Orders</th>
                 <th className="px-4 py-3 text-left text-sm font-medium">Joined</th>
+                <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((user) => (
                 <tr
                   key={user.id}
-                  className="border-t border-border hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => window.location.href = `/admin/users/${user.id}`}
+                  className="border-t border-border hover:bg-muted/50 transition-colors"
                 >
-                  <td className="px-4 py-3 text-sm">
+                  <td 
+                    className="px-4 py-3 text-sm cursor-pointer"
+                    onClick={() => router.push(`/admin/users/${user.id}`)}
+                  >
                     {user.name || "N/A"}
                   </td>
-                  <td className="px-4 py-3 text-sm">{user.email}</td>
+                  <td 
+                    className="px-4 py-3 text-sm cursor-pointer"
+                    onClick={() => router.push(`/admin/users/${user.id}`)}
+                  >
+                    {user.email}
+                  </td>
                   <td className="px-4 py-3">
                     <Badge
                       variant={user.role === "admin" ? "default" : "secondary"}
@@ -124,6 +136,14 @@ export default function UsersPage() {
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link href={`/admin/users/${user.id}`}>
+                      <Button variant="ghost" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </Button>
+                    </Link>
                   </td>
                 </tr>
               ))}
