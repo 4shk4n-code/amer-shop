@@ -3,15 +3,23 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
 // GET all orders (admin) or user's orders
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const orderId = searchParams.get("orderId");
+
     const isAdmin = (session.user as any).role === "admin";
-    const where = isAdmin ? {} : { userId: (session.user as any).id };
+    const where: any = isAdmin ? {} : { userId: (session.user as any).id };
+
+    // If searching by order ID (admin only)
+    if (orderId && isAdmin) {
+      where.id = { startsWith: orderId };
+    }
 
     const orders = await prisma.order.findMany({
       where,
