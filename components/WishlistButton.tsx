@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,41 +25,32 @@ export default function WishlistButton({
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  const checkWishlistStatus = async () => {
+  const checkWishlistStatus = useCallback(async () => {
+    if (!session?.user) {
+      setChecking(false);
+      return;
+    }
+
     try {
       const response = await fetch(`/api/wishlist/check/${productId}`);
       if (response.ok) {
         const data = await response.json();
-        setIsInWishlist(data.inWishlist);
+        setIsInWishlist(data.inWishlist || false);
+      } else {
+        console.error("Failed to check wishlist status:", response.status, response.statusText);
+        setIsInWishlist(false);
       }
     } catch (error) {
       console.error("Error checking wishlist:", error);
+      setIsInWishlist(false);
     } finally {
-      setChecking(false);
-    }
-  };
-
-  useEffect(() => {
-    if (session?.user) {
-      checkWishlistStatus();
-    } else {
       setChecking(false);
     }
   }, [session?.user, productId]);
 
-  const checkWishlistStatus = async () => {
-    try {
-      const response = await fetch(`/api/wishlist/check/${productId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setIsInWishlist(data.inWishlist);
-      }
-    } catch (error) {
-      console.error("Error checking wishlist:", error);
-    } finally {
-      setChecking(false);
-    }
-  };
+  useEffect(() => {
+    checkWishlistStatus();
+  }, [checkWishlistStatus]);
 
   const handleToggleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -81,6 +72,10 @@ export default function WishlistButton({
 
         if (response.ok) {
           setIsInWishlist(false);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Failed to remove from wishlist:", response.status, errorData);
+          alert("Failed to remove from wishlist. Please try again.");
         }
       } else {
         // Add to wishlist
@@ -94,10 +89,15 @@ export default function WishlistButton({
 
         if (response.ok) {
           setIsInWishlist(true);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Failed to add to wishlist:", response.status, errorData);
+          alert(`Failed to add to wishlist: ${errorData.error || "Unknown error"}`);
         }
       }
     } catch (error) {
       console.error("Error toggling wishlist:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
