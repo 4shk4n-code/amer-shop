@@ -10,8 +10,17 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = (session.user as any).id;
+    if (!userId) {
+      console.error("User ID not found in session:", session.user);
+      return NextResponse.json(
+        { error: "User ID not found in session" },
+        { status: 401 }
+      );
+    }
+
     const wishlistItems = await prisma.wishlistItem.findMany({
-      where: { userId: (session.user as any).id },
+      where: { userId },
       include: {
         product: {
           include: {
@@ -40,12 +49,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = (session.user as any).id;
+    if (!userId) {
+      console.error("User ID not found in session:", session.user);
+      return NextResponse.json(
+        { error: "User ID not found in session" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { productId } = body;
 
-    if (!productId) {
+    if (!productId || typeof productId !== "string") {
       return NextResponse.json(
-        { error: "Product ID is required" },
+        { error: "Product ID is required and must be a string" },
         { status: 400 }
       );
     }
@@ -66,7 +84,7 @@ export async function POST(request: Request) {
     const existing = await prisma.wishlistItem.findUnique({
       where: {
         userId_productId: {
-          userId: (session.user as any).id,
+          userId,
           productId,
         },
       },
@@ -81,7 +99,7 @@ export async function POST(request: Request) {
 
     const wishlistItem = await prisma.wishlistItem.create({
       data: {
-        userId: (session.user as any).id,
+        userId,
         productId,
       },
       include: {

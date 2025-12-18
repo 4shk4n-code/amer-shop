@@ -99,6 +99,12 @@ export const authConfig = {
   },
   callbacks: {
     async session({ session, token, user }) {
+      // Always set id from user object if available (when adapter is used)
+      if (user) {
+        (session.user as any).id = user.id;
+        (session.user as any).role = (user as any).role;
+      }
+      
       // Skip database entirely if adapter is disabled (JWT-only mode)
       if (!adapter) {
         if (token.role) {
@@ -111,14 +117,15 @@ export const authConfig = {
       }
       
       // Only query database if adapter is enabled and Prisma is available
-      if (session.user && prisma) {
+      // and user.id is not already set
+      if (session.user && prisma && !(session.user as any).id) {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { email: session.user.email! },
           });
           if (dbUser) {
-            session.user.id = dbUser.id;
-            session.user.role = dbUser.role;
+            (session.user as any).id = dbUser.id;
+            (session.user as any).role = dbUser.role;
           }
         } catch (error) {
           // If database query fails, use token data instead
@@ -126,8 +133,17 @@ export const authConfig = {
           if (token.role) {
             (session.user as any).role = token.role;
           }
+          if (token.sub) {
+            (session.user as any).id = token.sub;
+          }
         }
       }
+      
+      // Fallback: ensure id is set from token if still missing
+      if (!(session.user as any).id && token.sub) {
+        (session.user as any).id = token.sub;
+      }
+      
       return session;
     },
     async jwt({ token, user }) {
