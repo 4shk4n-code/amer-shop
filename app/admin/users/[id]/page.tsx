@@ -385,7 +385,12 @@ export default function AdminUserDetailPage() {
 
       {/* Order History */}
       <div className="bg-card border border-border rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Order History</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">Order History</h2>
+          <div className="text-sm text-muted-foreground">
+            {user.orders.filter(o => !["cancelled", "delivered"].includes(o.status)).length} active orders
+          </div>
+        </div>
         {user.orders.length === 0 ? (
           <p className="text-muted-foreground">No orders found</p>
         ) : (
@@ -403,56 +408,77 @@ export default function AdminUserDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {user.orders.map((order) => (
-                  <tr key={order.id} className="border-t">
-                    <td className="p-3 text-sm font-mono">
-                      {order.id.slice(0, 8)}...
-                    </td>
-                    <td className="p-3 text-sm">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-3 text-sm">{order.items.length} items</td>
-                    <td className="p-3 text-sm font-semibold">
-                      {order.total.toFixed(2)} AED
-                    </td>
-                    <td className="p-3">
-                      <Badge
-                        variant={
-                          order.status === "cancelled"
-                            ? "destructive"
-                            : order.status === "delivered"
-                            ? "default"
-                            : "secondary"
-                        }
+                {user.orders
+                  .sort((a, b) => {
+                    // Sort active orders first
+                    const aActive = !["cancelled", "delivered"].includes(a.status);
+                    const bActive = !["cancelled", "delivered"].includes(b.status);
+                    if (aActive && !bActive) return -1;
+                    if (!aActive && bActive) return 1;
+                    // Then sort by date (newest first)
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                  })
+                  .map((order) => {
+                    const isActive = !["cancelled", "delivered"].includes(order.status);
+                    return (
+                      <tr 
+                        key={order.id} 
+                        className={`border-t ${isActive ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}
                       >
-                        {order.status}
-                      </Badge>
-                    </td>
-                    <td className="p-3">
-                      <Badge variant="outline">{order.paymentStatus}</Badge>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex gap-2">
-                        <Link href={`/admin/orders/${order.id}`} target="_blank">
-                          <Button variant="ghost" size="sm">
-                            View
-                          </Button>
-                        </Link>
-                        {order.status !== "cancelled" &&
-                          order.status !== "delivered" && (
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleCancelOrder(order.id)}
-                              disabled={cancelingOrder === order.id}
-                            >
-                              {cancelingOrder === order.id ? "Canceling..." : "Cancel"}
-                            </Button>
-                          )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        <td className="p-3 text-sm font-mono">
+                          <Link 
+                            href={`/admin/orders/${order.id}`}
+                            className="text-primary hover:underline"
+                          >
+                            {order.id.slice(0, 8)}...
+                          </Link>
+                        </td>
+                        <td className="p-3 text-sm">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="p-3 text-sm">{order.items.length} items</td>
+                        <td className="p-3 text-sm font-semibold">
+                          {order.total.toFixed(2)} AED
+                        </td>
+                        <td className="p-3">
+                          <Badge
+                            variant={
+                              order.status === "cancelled"
+                                ? "destructive"
+                                : order.status === "delivered"
+                                ? "default"
+                                : "secondary"
+                            }
+                          >
+                            {order.status}
+                            {isActive && " ⚠️"}
+                          </Badge>
+                        </td>
+                        <td className="p-3">
+                          <Badge variant="outline">{order.paymentStatus}</Badge>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex gap-2">
+                            <Link href={`/admin/orders/${order.id}`}>
+                              <Button variant="ghost" size="sm">
+                                {isActive ? "Edit" : "View"}
+                              </Button>
+                            </Link>
+                            {isActive && (
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleCancelOrder(order.id)}
+                                disabled={cancelingOrder === order.id}
+                              >
+                                {cancelingOrder === order.id ? "Canceling..." : "Cancel"}
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>

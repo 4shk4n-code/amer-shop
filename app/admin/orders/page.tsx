@@ -11,6 +11,7 @@ interface Order {
   status: string;
   createdAt: string;
   user: {
+    id: string;
     name: string | null;
     email: string;
   };
@@ -99,39 +100,65 @@ export default function AdminOrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="border-b">
-                  <td className="p-4">
-                    <Link
-                      href={`/admin/orders/${order.id}`}
-                      className="text-primary hover:underline font-mono text-sm"
+              {filteredOrders
+                .sort((a, b) => {
+                  // Sort active orders first
+                  const aActive = !["cancelled", "delivered"].includes(a.status);
+                  const bActive = !["cancelled", "delivered"].includes(b.status);
+                  if (aActive && !bActive) return -1;
+                  if (!aActive && bActive) return 1;
+                  // Then sort by date (newest first)
+                  return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                })
+                .map((order) => {
+                  const isActive = !["cancelled", "delivered"].includes(order.status);
+                  return (
+                    <tr 
+                      key={order.id} 
+                      className={`border-b ${isActive ? "bg-blue-50/50 dark:bg-blue-950/20" : ""}`}
                     >
-                      {order.id.slice(0, 8)}...
-                    </Link>
-                  </td>
-                  <td className="p-4">
-                    {order.user.name || order.user.email}
-                  </td>
-                  <td className="p-4">{order.items.length} items</td>
-                  <td className="p-4">{order.total.toFixed(2)} AED</td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 bg-muted rounded text-sm">
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-4">
-                    <Link
-                      href={`/admin/orders/${order.id}`}
-                      className="text-primary hover:underline"
-                    >
-                      View
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+                      <td className="p-4">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="text-primary hover:underline font-mono text-sm"
+                        >
+                          {order.id.slice(0, 8)}...
+                        </Link>
+                      </td>
+                      <td className="p-4">
+                        <Link 
+                          href={`/admin/users/${order.user.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          {order.user.name || order.user.email}
+                        </Link>
+                      </td>
+                      <td className="p-4">{order.items.length} items</td>
+                      <td className="p-4">{order.total.toFixed(2)} AED</td>
+                      <td className="p-4">
+                        <span className={`px-2 py-1 rounded text-sm ${
+                          isActive 
+                            ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium" 
+                            : "bg-muted"
+                        }`}>
+                          {order.status}
+                          {isActive && " ⚠️"}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="p-4">
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="text-primary hover:underline font-medium"
+                        >
+                          {isActive ? "Edit" : "View"}
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
