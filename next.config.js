@@ -60,6 +60,50 @@ const nextConfig = {
       },
     ];
   },
+  async headers() {
+    // Allow unsafe-eval only in development (needed for webpack hot reload and Next.js dev mode)
+    // In production, we should avoid unsafe-eval for better security
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: isDevelopment
+              ? [
+                  "default-src 'self'",
+                  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live",
+                  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                  "font-src 'self' https://fonts.gstatic.com data:",
+                  "img-src 'self' data: https: blob:",
+                  "connect-src 'self' https://www.google-analytics.com https://api.telr.com https://secure.telr.com ws://localhost:* http://localhost:*",
+                  "frame-src 'self' https://secure.telr.com",
+                  "object-src 'none'",
+                  "base-uri 'self'",
+                  "form-action 'self'",
+                  "frame-ancestors 'none'",
+                ].join('; ')
+              : [
+                  "default-src 'self'",
+                  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+                  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                  "font-src 'self' https://fonts.gstatic.com data:",
+                  "img-src 'self' data: https: blob:",
+                  "connect-src 'self' https://www.google-analytics.com https://api.telr.com https://secure.telr.com",
+                  "frame-src 'self' https://secure.telr.com",
+                  "object-src 'none'",
+                  "base-uri 'self'",
+                  "form-action 'self'",
+                  "frame-ancestors 'none'",
+                  "upgrade-insecure-requests",
+                ].join('; '),
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
